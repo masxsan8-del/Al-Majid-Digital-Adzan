@@ -1,0 +1,2845 @@
+<!doctype html>
+<html lang="id" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jadwal Waktu Sholat Digital</title>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+    
+    :root {
+      --border-width: 0px;
+      --border-alpha: 0.3;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a4d2e 0%, #2d5f3f 50%, #1a4d2e 100%);
+      color: #ffffff;
+      overflow: hidden;
+      height: 100%;
+      width: 100%;
+    }
+    
+    .main-container {
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .header-banner {
+      background: transparent;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      position: relative;
+    }
+    
+    .settings-icon {
+      font-size: 2em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 100;
+      opacity: 0.1;
+      filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
+    }
+    
+    .settings-icon:hover {
+      transform: rotate(90deg);
+      opacity: 1;
+    }
+    
+    .date-section {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      text-align: center;
+    }
+    
+    .date-masehi {
+      font-size: 1.8em;
+      font-weight: 700;
+      color: #f4c430;
+    }
+    
+    .date-hijri {
+      font-size: 1.3em;
+      color: #ffffff;
+      opacity: 0.9;
+    }
+    
+    .masjid-info {
+      text-align: left;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 20px;
+      padding-bottom: 15px;
+      border-bottom: 4px solid #f4c430;
+    }
+    
+    .masjid-logo {
+      font-size: 4em;
+      filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+    }
+    
+    .masjid-text {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    
+    .masjid-name {
+      font-size: 2.2em;
+      font-weight: 700;
+      color: #f4c430;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .masjid-address {
+      font-size: 1.1em;
+      color: #ffffff;
+      opacity: 0.85;
+    }
+    
+    .content-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 15px;
+      padding: 10px 40px 0 40px;
+      flex: 1;
+      min-height: 0;
+    }
+    
+    .left-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10.5px;
+      min-height: 0;
+    }
+    
+    .clock-section {
+      background: transparent;
+      backdrop-filter: none;
+      border-radius: 15px;
+      padding: 15px;
+      text-align: center;
+      border: none !important;
+      box-shadow: none !important;
+    }
+    
+    .current-time {
+      font-size: 2.8em;
+      font-weight: 700;
+      color: #f4c430;
+      text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+      letter-spacing: 3px;
+    }
+    
+    .countdown-section {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 15px;
+      text-align: center;
+      border: var(--border-width) solid rgba(244, 196, 48, var(--border-alpha)) !important;
+      box-shadow: none !important;
+    }
+    
+    .countdown-label {
+      font-size: 1.2em;
+      color: #f4c430;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+    
+    .countdown-time {
+      font-size: 2.2em;
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .ayat-section {
+      background: transparent;
+      backdrop-filter: none;
+      border-radius: 15px;
+      padding: 15px;
+      border: var(--border-width) solid rgba(244, 196, 48, var(--border-alpha)) !important;
+      box-shadow: none !important;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    @keyframes slideOutLeft {
+      from { 
+        opacity: 1; 
+        transform: translateX(0);
+      }
+      to { 
+        opacity: 0; 
+        transform: translateX(-100%);
+      }
+    }
+    
+    @keyframes slideInRight {
+      from { 
+        opacity: 0; 
+        transform: translateX(100%);
+      }
+      to { 
+        opacity: 1; 
+        transform: translateX(0);
+      }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    .ayat-arab {
+      font-family: 'Amiri', serif;
+      font-size: 1.3em;
+      font-weight: 700;
+      text-align: center;
+      color: #f4c430;
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+    
+    .ayat-terjemahan {
+      font-size: 0.85em;
+      text-align: center;
+      color: #ffffff;
+      opacity: 0.9;
+      line-height: 1.4;
+    }
+    
+    .ayat-arab.fade-out,
+    .ayat-terjemahan.fade-out {
+      animation: slideOutLeft 0.8s ease-in-out forwards;
+    }
+    
+    .ayat-arab.fade-in,
+    .ayat-terjemahan.fade-in {
+      animation: slideInRight 0.8s ease-in-out forwards;
+    }
+    
+    .finance-section {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 10px;
+      border: var(--border-width) solid rgba(244, 196, 48, var(--border-alpha));
+    }
+    
+    .finance-title {
+      font-size: 0.9em;
+      font-weight: 700;
+      color: #f4c430;
+      text-align: center;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .finance-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    
+    .finance-item {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 8px;
+      border: calc(var(--border-width) * 0.5) solid rgba(244, 196, 48, var(--border-alpha));
+    }
+    
+    .finance-label {
+      font-size: 0.75em;
+      color: #ffffff;
+      opacity: 0.8;
+      margin-bottom: 3px;
+    }
+    
+    .finance-amount {
+      font-size: 1em;
+      font-weight: 700;
+      color: #f4c430;
+    }
+    
+    .right-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 0;
+    }
+    
+    .media-section {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(244, 196, 48, 0.3);
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .media-slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      font-size: 6em;
+    }
+    
+    .media-slide.active {
+      opacity: 1;
+    }
+    
+    .media-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .prayer-cards-wrapper {
+      padding: 10px 40px;
+      flex-shrink: 0;
+      margin-top: 16px;
+    }
+    
+    .prayer-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 10px;
+    }
+    
+    .prayer-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+      border: var(--border-width) solid rgba(255, 255, 255, var(--border-alpha));
+      transition: all 0.3s ease;
+    }
+    
+    .prayer-card.hidden {
+      display: none;
+    }
+    
+    .prayer-card.active {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 2px solid #f4c430;
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(244, 196, 48, 0.4);
+    }
+    
+    .prayer-icon {
+      font-size: 1.6em;
+      margin-bottom: 5px;
+    }
+    
+    .prayer-name {
+      font-size: 0.95em;
+      font-weight: 700;
+      color: #f4c430;
+      margin-bottom: 3px;
+    }
+    
+    .prayer-time {
+      font-size: 1.2em;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    
+    .running-text-container {
+      background: transparent;
+      padding: 10px 0;
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+    
+    .running-text {
+      display: inline-block;
+      white-space: nowrap;
+      animation: scroll 30s linear infinite;
+      font-size: 1.2em;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    
+    @keyframes scroll {
+      from { transform: translateX(100%); }
+      to { transform: translateX(-100%); }
+    }
+    
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      overflow-y: auto;
+    }
+    
+    .modal-overlay.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .modal-content {
+      background: linear-gradient(135deg, #1a4d2e 0%, #2d5f3f 100%);
+      border-radius: 20px;
+      padding: 30px;
+      width: 90%;
+      max-width: 900px;
+      max-height: 90%;
+      overflow-y: auto;
+      border: 3px solid #f4c430;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f4c430;
+    }
+    
+    .modal-title {
+      font-size: 2em;
+      font-weight: 700;
+      color: #f4c430;
+    }
+    
+    .close-btn {
+      font-size: 2em;
+      cursor: pointer;
+      color: #ffffff;
+      transition: transform 0.3s ease;
+    }
+    
+    .close-btn:hover {
+      transform: scale(1.2);
+      color: #f4c430;
+    }
+    
+    .settings-section {
+      margin-bottom: 25px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      border-radius: 15px;
+      border: 2px solid rgba(244, 196, 48, 0.3);
+    }
+    
+    .section-title {
+      font-size: 1.4em;
+      font-weight: 700;
+      color: #f4c430;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #ffffff;
+      font-size: 1em;
+    }
+    
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 2px solid rgba(244, 196, 48, 0.3);
+      background: rgba(255, 255, 255, 0.9);
+      color: #1a4d2e;
+      font-size: 1em;
+      font-weight: 600;
+      transition: border-color 0.3s ease;
+    }
+    
+    .form-input:focus, .form-textarea:focus {
+      outline: none;
+      border-color: #f4c430;
+    }
+    
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 10px;
+    }
+    
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    
+    .checkbox-item:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .checkbox-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    
+    .checkbox-item label {
+      cursor: pointer;
+      font-size: 0.95em;
+      color: #ffffff;
+    }
+    
+    .btn {
+      padding: 12px 30px;
+      border-radius: 10px;
+      border: none;
+      font-size: 1.1em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .btn-primary {
+      background: #f4c430;
+      color: #1a4d2e;
+    }
+    
+    .btn-primary:hover {
+      background: #ffd700;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(244, 196, 48, 0.4);
+    }
+    
+    .btn-primary:disabled {
+      background: #999;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .save-section {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px solid rgba(244, 196, 48, 0.3);
+    }
+    
+    .time-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+    
+    .finance-grid-form {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+    
+    .slide-item {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 2px solid rgba(244, 196, 48, 0.2);
+    }
+    
+    .slide-header {
+      font-size: 1.1em;
+      font-weight: 700;
+      color: #f4c430;
+      margin-bottom: 12px;
+    }
+    
+    .slide-type-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    
+    .type-btn {
+      flex: 1;
+      padding: 8px 15px;
+      border-radius: 8px;
+      border: 2px solid rgba(244, 196, 48, 0.3);
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      font-size: 0.9em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .type-btn.active {
+      background: #f4c430;
+      color: #1a4d2e;
+      border-color: #f4c430;
+    }
+    
+    .type-btn:hover {
+      background: rgba(244, 196, 48, 0.3);
+    }
+    
+    .slide-content-input {
+      display: none;
+    }
+    
+    .slide-content-input.active {
+      display: block;
+    }
+    
+    .file-upload-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+    
+    .file-upload-label {
+      display: block;
+      padding: 12px;
+      border-radius: 8px;
+      border: 2px dashed rgba(244, 196, 48, 0.5);
+      background: rgba(255, 255, 255, 0.9);
+      color: #1a4d2e;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+    
+    .file-upload-label:hover {
+      border-color: #f4c430;
+      background: #ffffff;
+    }
+    
+    .file-upload-input {
+      position: absolute;
+      left: -9999px;
+    }
+    
+    .preview-container {
+      margin-top: 10px;
+      text-align: center;
+    }
+    
+    .preview-image {
+      max-width: 150px;
+      max-height: 150px;
+      border-radius: 8px;
+      border: 2px solid #f4c430;
+    }
+    
+    .preview-emoji {
+      font-size: 4em;
+    }
+    
+    .panel-content {
+      display: none;
+    }
+    
+    .panel-content.active {
+      display: block;
+    }
+    
+    .success-message {
+      background: rgba(74, 222, 128, 0.2);
+      border: 2px solid #4ade80;
+      color: #4ade80;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.1em;
+      margin-top: 15px;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+  <!-- SheetJS for Excel Parsing -->
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+ </head>
+ <body class="h-full">
+  <div class="main-container"><!-- Header Banner -->
+   <div class="header-banner">
+    <div class="masjid-info">
+     <div class="masjid-logo" id="masjidLogo">
+      🕌
+     </div>
+     <div class="masjid-text">
+      <div class="masjid-name" id="masjidName">
+       Masjid Al-Ikhlas
+      </div>
+      <div class="masjid-address" id="masjidAddress">
+       Jl. Contoh No. 123, Jakarta
+      </div>
+     </div>
+    </div>
+    <div class="settings-icon" onclick="openSettings()">
+     ⚙️
+    </div>
+    <div class="date-section">
+     <div class="date-masehi" id="dateMasehi">
+      Senin, 1 Januari 2024
+     </div>
+     <div class="date-hijri" id="dateHijri">
+      18 Jumadil Akhir 1445 H
+     </div>
+    </div>
+   </div><!-- Content Wrapper -->
+   <div class="content-wrapper"><!-- Left Section -->
+    <div class="left-section"><!-- Clock Section -->
+     <div class="clock-section">
+      <div class="current-time" id="currentTime">
+       00:00:00
+      </div>
+     </div><!-- Countdown Section -->
+     <div class="countdown-section">
+      <div class="countdown-label" id="countdownLabel">
+       Menuju Sholat Subuh
+      </div>
+      <div class="countdown-time" id="countdownTime">
+       00:00:00
+      </div>
+     </div><!-- Ayat Section -->
+     <div class="ayat-section">
+      <div class="ayat-arab" id="ayatArab">
+       إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَوْقُوتًا
+      </div>
+      <div class="ayat-terjemahan" id="ayatTerjemahan">
+       Sesungguhnya sholat itu adalah kewajiban yang ditentukan waktunya atas orang-orang yang beriman. (QS. An-Nisa: 103)
+      </div>
+     </div><!-- Finance / Announcement Section -->
+     <div class="finance-section" id="financeSection">
+      <div class="finance-title" id="panelTitle">
+       💰 Keuangan Masjid
+      </div><!-- Keuangan Display -->
+      <div class="finance-grid" id="financeDisplay">
+       <div class="finance-item">
+        <div class="finance-label">
+         Saldo Kas
+        </div>
+        <div class="finance-amount" id="financeKas">
+         Rp 15.250.000
+        </div>
+       </div>
+       <div class="finance-item">
+        <div class="finance-label">
+         Pemasukan Bulan Ini
+        </div>
+        <div class="finance-amount" id="financePemasukan">
+         Rp 8.500.000
+        </div>
+       </div>
+       <div class="finance-item">
+        <div class="finance-label">
+         Pengeluaran Bulan Ini
+        </div>
+        <div class="finance-amount" id="financePengeluaran">
+         Rp 3.200.000
+        </div>
+       </div>
+       <div class="finance-item">
+        <div class="finance-label">
+         Donatur
+        </div>
+        <div class="finance-amount" id="financeDonors" style="font-size: 0.9em; display: flex; flex-direction: column; justify-content: center; height: 60px;">
+          <div id="donorName" style="font-weight: bold; margin-bottom: 5px; transition: opacity 0.5s ease;">-</div>
+          <div id="donorAmount" style="color: #f4c430; transition: opacity 0.5s ease;">-</div>
+         </div>
+       </div>
+      </div><!-- Pengumuman Display -->
+      <div id="pengumumanDisplay" style="display: none;">
+       <div style="background: rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 15px;">
+        <div id="pengumumanIsiDisplay" style="font-size: 0.95em; color: #ffffff; line-height: 1.6; text-align: left;">
+         Belum ada pengumuman.
+        </div>
+       </div>
+      </div>
+     </div>
+    </div><!-- Right Section -->
+    <div class="right-section"><!-- Media Section -->
+     <div class="media-section" id="mediaSection">
+      <div class="media-slide active">
+       🕌
+      </div>
+     </div>
+    </div>
+   </div><!-- Prayer Cards - Horizontal -->
+   <div class="prayer-cards-wrapper">
+    <div class="prayer-cards" id="prayerCards">
+     <div class="prayer-card" data-prayer="imsak">
+      <div class="prayer-icon">
+       🌙
+      </div>
+      <div class="prayer-name">
+       Imsak
+      </div>
+      <div class="prayer-time" id="timeImsak">
+       04:30
+      </div>
+     </div>
+     <div class="prayer-card" data-prayer="subuh">
+      <div class="prayer-icon">
+       🌅
+      </div>
+      <div class="prayer-name">
+       Subuh
+      </div>
+      <div class="prayer-time" id="timeSubuh">
+       04:40
+      </div>
+     </div>
+     <div class="prayer-card" data-prayer="syuruq">
+      <div class="prayer-icon">
+       🌄
+      </div>
+      <div class="prayer-name">
+       Syuruq
+      </div>
+      <div class="prayer-time" id="timeSyuruq">
+       05:55
+      </div>
+     </div>
+     <div class="prayer-card" data-prayer="dhuha">
+      <div class="prayer-icon">
+       ☀️
+      </div>
+      <div class="prayer-name">
+       Dhuha
+      </div>
+      <div class="prayer-time" id="timeDhuha">
+       06:15
+      </div>
+     </div>
+     <div class="prayer-card" data-prayer="dzuhur">
+      <div class="prayer-icon">
+       🌞
+      </div>
+      <div class="prayer-name">
+       Dzuhur
+      </div>
+      <div class="prayer-time" id="timeDzuhur">
+       12:05
+      </div>
+     </div>
+     <div class="prayer-card" data-prayer="ashar">
+      <div class="prayer-icon">
+       🌤️
+      </div>
+      <div class="prayer-name">
+       Ashar
+      </div>
+      <div class="prayer-time" id="timeAshar">
+       15:15
+      </div>
+     </div>
+     <div class="prayer-card" data-prayer="maghrib">
+      <div class="prayer-icon">
+       🌆
+      </div>
+      <div class="prayer-name">
+       Maghrib
+      </div>
+      <div class="prayer-time" id="timeMaghrib">
+       18:00
+      </div>
+     </div>
+     <div class="prayer-card" data-prayer="isya">
+      <div class="prayer-icon">
+       🌙
+      </div>
+      <div class="prayer-name">
+       Isya
+      </div>
+      <div class="prayer-time" id="timeIsya">
+       19:10
+      </div>
+     </div>
+    </div>
+   </div><!-- Running Text -->
+   <div class="running-text-container">
+    <div class="running-text" id="runningText">
+     Selamat datang di Masjid Al-Ikhlas • Kajian Rutin Setiap Jumat Ba'da Maghrib • Mari Makmurkan Masjid
+    </div>
+   </div>
+  </div><!-- Settings Modal -->
+  <div class="modal-overlay" id="settingsModal">
+   <div class="modal-content">
+    <div class="modal-header">
+     <h2 class="modal-title">⚙️ Pengaturan Jadwal Sholat</h2><span class="close-btn" onclick="closeSettings()">✖</span>
+    </div>
+    <form id="settingsForm" onsubmit="saveSettings(event)"><!-- Informasi Masjid -->
+     <div class="settings-section">
+      <h3 class="section-title">🕌 Informasi Masjid</h3>
+      <p style="color: #f4c430; font-size: 0.85em; margin-bottom: 10px; background: rgba(244, 196, 48, 0.1); padding: 8px; border-radius: 4px; border: 1px solid rgba(244, 196, 48, 0.3);">
+        ⚠️ <b>Mode Demo:</b> Informasi masjid tidak dapat diubah.
+      </p>
+      <div class="form-group"><label class="form-label" for="inputNamaMasjid">Nama Masjid</label> <input type="text" class="form-input" id="inputNamaMasjid" placeholder="Masukkan nama masjid" disabled style="opacity: 0.6; cursor: not-allowed;">
+      </div>
+      <div class="form-group"><label class="form-label" for="inputLogoMasjid">Logo Masjid (Emoji)</label> <input type="text" class="form-input" id="inputLogoMasjid" placeholder="🕌" maxlength="2" disabled style="opacity: 0.6; cursor: not-allowed;">
+      </div>
+      <div class="form-group"><label class="form-label" for="inputAlamatMasjid">Alamat Masjid</label> <input type="text" class="form-input" id="inputAlamatMasjid" placeholder="Masukkan alamat masjid" disabled style="opacity: 0.6; cursor: not-allowed;">
+      </div>
+     </div><!-- Waktu Sholat -->
+     <div class="settings-section">
+      <h3 class="section-title">⏰ Waktu Sholat</h3>
+      <div class="time-grid">
+       <div class="form-group"><label class="form-label" for="inputImsak">Imsak</label> <input type="time" class="form-input" id="inputImsak">
+       </div>
+       <div class="form-group"><label class="form-label" for="inputSubuh">Subuh</label> <input type="time" class="form-input" id="inputSubuh">
+       </div>
+       <div class="form-group"><label class="form-label" for="inputSyuruq">Syuruq</label> <input type="time" class="form-input" id="inputSyuruq">
+       </div>
+       <div class="form-group"><label class="form-label" for="inputDhuha">Dhuha</label> <input type="time" class="form-input" id="inputDhuha">
+       </div>
+       <div class="form-group"><label class="form-label" for="inputDzuhur">Dzuhur</label> <input type="time" class="form-input" id="inputDzuhur">
+       </div>
+       <div class="form-group"><label class="form-label" for="inputAshar">Ashar</label> <input type="time" class="form-input" id="inputAshar">
+       </div>
+       <div class="form-group"><label class="form-label" for="inputMaghrib">Maghrib</label> <input type="time" class="form-input" id="inputMaghrib">
+       </div>
+       <div class="form-group"><label class="form-label" for="inputIsya">Isya</label> <input type="time" class="form-input" id="inputIsya">
+       </div>
+      </div>
+     </div><!-- Sembunyikan Waktu Sholat -->
+     <div class="settings-section">
+      <h3 class="section-title">🙈 Sembunyikan Waktu Sholat</h3>
+      <p style="color: #ffffff; opacity: 0.8; margin-bottom: 15px; font-size: 0.9em;">Centang untuk menyembunyikan waktu sholat tertentu dari tampilan</p>
+      <div class="checkbox-group">
+       <div class="checkbox-item"><input type="checkbox" id="hideImsak"> <label for="hideImsak">Sembunyikan Imsak</label>
+       </div>
+       <div class="checkbox-item"><input type="checkbox" id="hideSyuruq"> <label for="hideSyuruq">Sembunyikan Syuruq</label>
+       </div>
+       <div class="checkbox-item"><input type="checkbox" id="hideDhuha"> <label for="hideDhuha">Sembunyikan Dhuha</label>
+       </div>
+      </div>
+     </div><!-- Background -->
+     <div class="settings-section">
+      <h3 class="section-title">🎨 Background Tampilan</h3>
+      <div class="form-group"><label class="form-label">Tipe Background</label>
+       <div class="slide-type-selector"><button type="button" class="type-btn active" id="btnBgSolid" onclick="selectBackgroundType('solid')">🎨 Warna Solid</button> <button type="button" class="type-btn" id="btnBgGradient" onclick="selectBackgroundType('gradient')">🌈 Gradient</button> <button type="button" class="type-btn" id="btnBgImage" onclick="selectBackgroundType('image')">🖼️ Gambar</button>
+       </div>
+      </div><!-- Solid Color Background -->
+      <div id="bgSolidPanel" class="slide-content-input active">
+       <div class="form-group"><label class="form-label">Pilih Warna Background</label>
+        <div style="display: grid; grid-template-columns: 1fr 4fr; gap: 15px; align-items: center;"><input type="color" id="inputBgColor" class="form-input" value="#1a4d2e" style="height: 60px; cursor: pointer;">
+         <div>
+          <div style="color: #ffffff; opacity: 0.9; margin-bottom: 8px; font-size: 0.9em;">
+           atau pilih warna preset:
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px;"><button type="button" onclick="setPresetColor('#1a4d2e')" style="background: #1a4d2e; height: 40px; border: 2px solid rgba(244, 196, 48, 0.5); border-radius: 8px; cursor: pointer;"></button> <button type="button" onclick="setPresetColor('#2c3e50')" style="background: #2c3e50; height: 40px; border: 2px solid rgba(244, 196, 48, 0.5); border-radius: 8px; cursor: pointer;"></button> <button type="button" onclick="setPresetColor('#34495e')" style="background: #34495e; height: 40px; border: 2px solid rgba(244, 196, 48, 0.5); border-radius: 8px; cursor: pointer;"></button> <button type="button" onclick="setPresetColor('#16a085')" style="background: #16a085; height: 40px; border: 2px solid rgba(244, 196, 48, 0.5); border-radius: 8px; cursor: pointer;"></button> <button type="button" onclick="setPresetColor('#27ae60')" style="background: #27ae60; height: 40px; border: 2px solid rgba(244, 196, 48, 0.5); border-radius: 8px; cursor: pointer;"></button> <button type="button" onclick="setPresetColor('#2980b9')" style="background: #2980b9; height: 40px; border: 2px solid rgba(244, 196, 48, 0.5); border-radius: 8px; cursor: pointer;"></button> <button type="button" onclick="setPresetColor('#8e44ad')" style="background: #8e44ad; height: 40px; border: 2px solid rgba(244, 196, 48, 0.5); border-radius: 8px; cursor: pointer;"></button> <button type="button" onclick="setPresetColor('#c0392b')" style="background: #c0392b; height: 40px; border: 2px solid rgba(244, 196, 48, 0.5); border-radius: 8px; cursor: pointer;"></button> <button type="button" onclick="setPresetColor('#d35400')" style="background: #d35400; height: 40px; border: 2px solid rgba(244, 196, 48, 0.5); border-radius: 8px; cursor: pointer;"></button> <button type="button" onclick="setPresetColor('#7f8c8d')" style="background: #7f8c8d; height: 40px; border: 2px solid rgba(244, 196, 48, 0.5); border-radius: 8px; cursor: pointer;"></button> <button type="button" onclick="setPresetColor('#1abc9c')" style="background: #1abc9c; height: 40px; border: 2px solid rgba(244, 196, 48, 0.5); border-radius: 8px; cursor: pointer;"></button> <button type="button" onclick="setPresetColor('#e74c3c')" style="background: #e74c3c; height: 40px; border: 2px solid rgba(244, 196, 48, 0.5); border-radius: 8px; cursor: pointer;"></button>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div><!-- Gradient Background -->
+      <div id="bgGradientPanel" class="slide-content-input">
+       <div class="form-group"><label class="form-label">Warna Gradient 1</label> <input type="color" id="inputGradient1" class="form-input" value="#1a4d2e" style="height: 60px; cursor: pointer;">
+       </div>
+       <div class="form-group"><label class="form-label">Warna Gradient 2</label> <input type="color" id="inputGradient2" class="form-input" value="#2d5f3f" style="height: 60px; cursor: pointer;">
+       </div>
+       <div class="form-group"><label class="form-label">Warna Gradient 3 (Opsional)</label> <input type="color" id="inputGradient3" class="form-input" value="#1a4d2e" style="height: 60px; cursor: pointer;">
+       </div>
+       <div class="form-group"><label class="form-label">Arah Gradient</label> <select id="inputGradientDirection" class="form-input"> <option value="135deg">↘ Diagonal (Kanan Bawah)</option> <option value="45deg">↗ Diagonal (Kanan Atas)</option> <option value="225deg">↙ Diagonal (Kiri Bawah)</option> <option value="315deg">↖ Diagonal (Kiri Atas)</option> <option value="90deg">→ Horizontal (Kiri ke Kanan)</option> <option value="270deg">← Horizontal (Kanan ke Kiri)</option> <option value="180deg">↓ Vertikal (Atas ke Bawah)</option> <option value="0deg">↑ Vertikal (Bawah ke Atas)</option> </select>
+       </div>
+       <div class="form-group"><label class="form-label">Gradient Preset</label>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;"><button type="button" onclick="setPresetGradient('#1a4d2e', '#2d5f3f', '#1a4d2e')" style="background: linear-gradient(135deg, #1a4d2e 0%, #2d5f3f 50%, #1a4d2e 100%); height: 50px; border: 2px solid rgba(244, 196, 48, 0.5); border-radius: 8px; cursor: pointer; color: #fff; font-size: 0.8em;">Hijau Masjid</button> <button type="button" onclick="setPresetGradient('#2c3e50', '#3498db', '#2c3e50')" style="background: linear-gradient(135deg, #2c3e50 0%, #3498db 50%, #2c3e50 100%); height: 50px; border: 2px solid rgba(244, 196, 48, 0.5); border-radius: 8px; cursor: pointer; color: #fff; font-size: 0.8em;">Biru Laut</button> <button type="button" onclick="setPresetGradient('#8e44ad', '#3498db', '#8e44ad')" style="background: linear-gradient(135deg, #8e44ad 0%, #3498db 50%, #8e44ad 100%); height: 50px; border: 2px solid rgba(244, 196, 48, 0.5); border-radius: 8px; cursor: pointer; color: #fff; font-size: 0.8em;">Ungu Biru</button> <button type="button" onclick="setPresetGradient('#c0392b', '#e74c3c', '#c0392b')" style="background: linear-gradient(135deg, #c0392b 0%, #e74c3c 50%, #c0392b 100%); height: 50px; border: 2px solid rgba(244, 196, 48, 0.5); border-radius: 8px; cursor: pointer; color: #fff; font-size: 0.8em;">Merah Marun</button> <button type="button" onclick="setPresetGradient('#16a085', '#27ae60', '#16a085')" style="background: linear-gradient(135deg, #16a085 0%, #27ae60 50%, #16a085 100%); height: 50px; border: 2px solid rgba(244, 196, 48, 0.5); border-radius: 8px; cursor: pointer; color: #fff; font-size: 0.8em;">Hijau Tosca</button> <button type="button" onclick="setPresetGradient('#34495e', '#7f8c8d', '#34495e')" style="background: linear-gradient(135deg, #34495e 0%, #7f8c8d 50%, #34495e 100%); height: 50px; border: 2px solid rgba(244, 196, 48, 0.5); border-radius: 8px; cursor: pointer; color: #fff; font-size: 0.8em;">Abu Gelap</button>
+        </div>
+       </div>
+      </div><!-- Image Background -->
+      <div id="bgImagePanel" class="slide-content-input">
+       <div class="form-group"><label class="form-label">Upload Background Gambar</label>
+        <div class="file-upload-wrapper"><label for="fileBackground" class="file-upload-label"> 🖼️ Klik untuk pilih gambar background </label> <input type="file" id="fileBackground" class="file-upload-input" accept="image/*" onchange="handleBackgroundUpload()">
+        </div>
+        <div id="previewBackground" class="preview-container"></div>
+       </div>
+      </div>
+      <div class="form-group"><label class="form-label">Preview Background Saat Ini</label>
+       <div style="background: rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 15px; text-align: center;">
+        <div id="currentBackgroundPreview" style="color: #ffffff; opacity: 0.8;">
+         Gradient Default
+        </div>
+       </div>
+      </div>
+      <div class="form-group"><button type="button" class="btn btn-primary" onclick="resetBackground()" style="width: 100%; background: rgba(244, 196, 48, 0.3); color: #ffffff;"> 🔄 Reset ke Background Default </button>
+      </div>
+     <div class="settings-section">
+      <h3 class="section-title">🎨 Tampilan Border</h3>
+      <p style="color: #ffffff; opacity: 0.8; margin-bottom: 15px; font-size: 0.9em;">Atur tampilan border pada semua kontainer</p>
+      
+      <div class="checkbox-item" style="margin-bottom: 15px;">
+       <input type="checkbox" id="checkShowBorder" onchange="applyBorderStyles()"> 
+       <label for="checkShowBorder">Tampilkan Border Kontainer</label>
+      </div>
+      
+      <div class="form-group">
+       <label class="form-label" style="display: flex; justify-content: space-between;">
+        <span>Intensitas Border (Opacity)</span>
+        <span id="borderIntensityValue">30%</span>
+       </label>
+       <input type="range" id="rangeBorderIntensity" class="form-input" min="10" max="100" value="30" oninput="applyBorderStyles()">
+      </div>
+     </div><!-- Gambar Slide -->
+     <div class="settings-section">
+      <h3 class="section-title">🖼️ Gambar Slide (5 Slot)</h3>
+      <p style="color: #ffffff; opacity: 0.8; margin-bottom: 15px; font-size: 0.9em;">Pilih jenis konten: URL Gambar atau Upload dari Komputer</p><!-- Slide 1 -->
+      <div class="slide-item">
+       <div class="slide-header">
+        📌 Slide 1
+       </div>
+       <div class="slide-type-selector"><button type="button" class="type-btn active" onclick="selectSlideType(1, 'url')">🔗 URL Gambar</button> <button type="button" class="type-btn" onclick="selectSlideType(1, 'upload')">📤 Upload</button>
+       </div>
+       <div id="slide1-url" class="slide-content-input active"><input type="text" class="form-input" id="inputSlide1Url" placeholder="https://example.com/image.jpg">
+       </div>
+       <div id="slide1-upload" class="slide-content-input">
+        <div class="file-upload-wrapper"><label for="fileSlide1" class="file-upload-label"> 📂 Klik untuk pilih gambar </label> <input type="file" id="fileSlide1" class="file-upload-input" accept="image/*" onchange="handleFileUpload(1)">
+        </div>
+        <div id="preview1" class="preview-container"></div>
+       </div>
+      </div><!-- Slide 2 -->
+      <div class="slide-item">
+       <div class="slide-header">
+        📌 Slide 2
+       </div>
+       <div class="slide-type-selector"><button type="button" class="type-btn active" onclick="selectSlideType(2, 'url')">🔗 URL Gambar</button> <button type="button" class="type-btn" onclick="selectSlideType(2, 'upload')">📤 Upload</button>
+       </div>
+       <div id="slide2-url" class="slide-content-input active"><input type="text" class="form-input" id="inputSlide2Url" placeholder="https://example.com/image.jpg">
+       </div>
+       <div id="slide2-upload" class="slide-content-input">
+        <div class="file-upload-wrapper"><label for="fileSlide2" class="file-upload-label"> 📂 Klik untuk pilih gambar </label> <input type="file" id="fileSlide2" class="file-upload-input" accept="image/*" onchange="handleFileUpload(2)">
+        </div>
+        <div id="preview2" class="preview-container"></div>
+       </div>
+      </div><!-- Slide 3 -->
+      <div class="slide-item">
+       <div class="slide-header">
+        📌 Slide 3
+       </div>
+       <div class="slide-type-selector"><button type="button" class="type-btn active" onclick="selectSlideType(3, 'url')">🔗 URL Gambar</button> <button type="button" class="type-btn" onclick="selectSlideType(3, 'upload')">📤 Upload</button>
+       </div>
+       <div id="slide3-url" class="slide-content-input active"><input type="text" class="form-input" id="inputSlide3Url" placeholder="https://example.com/image.jpg">
+       </div>
+       <div id="slide3-upload" class="slide-content-input">
+        <div class="file-upload-wrapper"><label for="fileSlide3" class="file-upload-label"> 📂 Klik untuk pilih gambar </label> <input type="file" id="fileSlide3" class="file-upload-input" accept="image/*" onchange="handleFileUpload(3)">
+        </div>
+        <div id="preview3" class="preview-container"></div>
+       </div>
+      </div><!-- Slide 4 -->
+      <div class="slide-item">
+       <div class="slide-header">
+        📌 Slide 4
+       </div>
+       <div class="slide-type-selector"><button type="button" class="type-btn active" onclick="selectSlideType(4, 'url')">🔗 URL Gambar</button> <button type="button" class="type-btn" onclick="selectSlideType(4, 'upload')">📤 Upload</button>
+       </div>
+       <div id="slide4-url" class="slide-content-input active"><input type="text" class="form-input" id="inputSlide4Url" placeholder="https://example.com/image.jpg">
+       </div>
+       <div id="slide4-upload" class="slide-content-input">
+        <div class="file-upload-wrapper"><label for="fileSlide4" class="file-upload-label"> 📂 Klik untuk pilih gambar </label> <input type="file" id="fileSlide4" class="file-upload-input" accept="image/*" onchange="handleFileUpload(4)">
+        </div>
+        <div id="preview4" class="preview-container"></div>
+       </div>
+      </div><!-- Slide 5 -->
+      <div class="slide-item">
+       <div class="slide-header">
+        📌 Slide 5
+       </div>
+       <div class="slide-type-selector"><button type="button" class="type-btn active" onclick="selectSlideType(5, 'url')">🔗 URL Gambar</button> <button type="button" class="type-btn" onclick="selectSlideType(5, 'upload')">📤 Upload</button>
+       </div>
+       <div id="slide5-url" class="slide-content-input active"><input type="text" class="form-input" id="inputSlide5Url" placeholder="https://example.com/image.jpg">
+       </div>
+       <div id="slide5-upload" class="slide-content-input">
+        <div class="file-upload-wrapper"><label for="fileSlide5" class="file-upload-label"> 📂 Klik untuk pilih gambar </label> <input type="file" id="fileSlide5" class="file-upload-input" accept="image/*" onchange="handleFileUpload(5)">
+        </div>
+        <div id="preview5" class="preview-container"></div>
+       </div>
+      </div>
+     </div><!-- Pengaturan Tanggal -->
+     <div class="settings-section">
+      <h3 class="section-title">📅 Pengaturan Tanggal</h3>
+      <div class="checkbox-item" style="margin-bottom: 15px;"><input type="checkbox" id="useManualDate"> <label for="useManualDate">Gunakan Tanggal Manual (Tidak Otomatis)</label>
+      </div>
+      <div class="form-group"><label class="form-label" for="inputManualDate">Tanggal Manual</label> <input type="date" class="form-input" id="inputManualDate">
+      </div>
+     </div>
+     
+     <!-- Upload Jadwal Excel -->
+     <div class="settings-section">
+      <h3 class="section-title">📊 Upload Jadwal Sholat (Excel)</h3>
+      <p style="color: #ffffff; opacity: 0.8; margin-bottom: 15px; font-size: 0.9em;">
+        Upload file Excel (.xlsx) berisi jadwal sholat satu tahun/bulan. 
+        <br>Pastikan format kolom: Tanggal, Imsak, Subuh, Syuruq, Dhuha, Dzuhur, Ashar, Maghrib, Isya.
+      </p>
+      
+      <div class="checkbox-item" style="margin-bottom: 15px;">
+        <input type="checkbox" id="checkUseExcel" onchange="toggleExcelPanel()"> 
+        <label for="checkUseExcel">Gunakan Jadwal dari Excel</label>
+      </div>
+
+      <div id="excelUploadPanel" style="display: none;">
+        <div class="form-group">
+          <label class="form-label">Upload File Excel</label>
+          <div class="file-upload-wrapper">
+            <label for="fileExcelSchedule" class="file-upload-label"> 📂 Klik untuk pilih file Excel </label>
+            <input type="file" id="fileExcelSchedule" class="file-upload-input" accept=".xlsx, .xls" onchange="handleScheduleUpload()">
+          </div>
+        </div>
+        
+        <div id="excelStatus" style="margin-top: 10px; padding: 10px; border-radius: 6px; font-size: 0.9em; display: none;"></div>
+        
+        <div class="form-group" style="margin-top: 15px;">
+           <label class="form-label">Contoh Template</label>
+           <button type="button" class="btn" style="background: #27ae60; color: #fff; width: 100%; font-size: 0.9em;" onclick="downloadExcelTemplate()">⬇️ Download Template Excel</button>
+        </div>
+      </div>
+     </div>
+     
+     <!-- Keuangan Masjid / Pengumuman -->
+     <div class="settings-section">
+      <h3 class="section-title">💰 Keuangan Masjid / 📢 Pengumuman</h3>
+      <div class="form-group" style="margin-bottom: 20px;"><label class="form-label">Mode Panel</label>
+       <div class="slide-type-selector"><button type="button" class="type-btn active" id="btnModeKeuangan" onclick="selectPanelMode('keuangan')">💰 Keuangan Masjid</button> <button type="button" class="type-btn" id="btnModePengumuman" onclick="selectPanelMode('pengumuman')">📢 Pengumuman</button>
+       </div>
+      </div><!-- Keuangan Content -->
+      <div id="panelKeuangan" class="panel-content active">
+       <div class="finance-grid-form">
+        <div class="form-group"><label class="form-label" for="inputSaldoKas">Saldo Kas</label> <input type="text" class="form-input" id="inputSaldoKas" placeholder="Rp 15.250.000">
+        </div>
+        <div class="form-group"><label class="form-label" for="inputPemasukan">Pemasukan Bulan Ini</label> <input type="text" class="form-input" id="inputPemasukan" placeholder="Rp 8.500.000">
+        </div>
+        <div class="form-group"><label class="form-label" for="inputPengeluaran">Pengeluaran Bulan Ini</label> <input type="text" class="form-input" id="inputPengeluaran" placeholder="Rp 3.200.000">
+        </div>
+       </div>
+       
+       <div class="settings-section" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+        <h4 style="color: #f4c430; margin-bottom: 15px;">👥 Daftar Donatur</h4>
+        
+        <!-- Input New Donor -->
+        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+          <div class="form-group">
+            <label class="form-label">Nama Donatur</label>
+            <input type="text" class="form-input" id="inputDonorName" placeholder="Contoh: Hamba Allah">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nominal</label>
+            <input type="text" class="form-input" id="inputDonorAmount" placeholder="Contoh: Rp 500.000">
+          </div>
+          <button type="button" class="btn btn-primary" onclick="addDonorToList()" style="width: 100%; margin-top: 10px;">➕ Tambah Donatur</button>
+        </div>
+
+        <!-- Donor List -->
+        <div id="donorListContainer" style="max-height: 200px; overflow-y: auto;">
+          <!-- Donors will be populated here -->
+        </div>
+       </div>
+      </div><!-- Pengumuman Content -->
+      <div id="panelPengumuman" class="panel-content">
+       <div class="form-group"><label class="form-label" for="inputPengumumanIsi">Isi Pengumuman</label> <textarea class="form-textarea" id="inputPengumumanIsi" placeholder="Tulis isi pengumuman di sini..." style="min-height: 200px;"></textarea>
+       </div>
+      </div>
+     </div><!-- Running Text -->
+     <div class="settings-section">
+      <h3 class="section-title">📰 Running Text</h3>
+      <div class="form-group"><label class="form-label" for="inputRunningText">Teks Berjalan</label> <textarea class="form-textarea" id="inputRunningText" placeholder="Masukkan teks berjalan yang akan ditampilkan"></textarea>
+      </div>
+     </div><!-- Suara Adzan -->
+     <div class="settings-section">
+      <h3 class="section-title">🔊 Suara Adzan</h3>
+      <p style="color: #ffffff; opacity: 0.8; margin-bottom: 15px; font-size: 0.9em;">Pilih sumber suara adzan: URL atau Upload File MP3</p>
+      <div class="slide-type-selector">
+       <button type="button" class="type-btn active" id="btnAdzanUrl" onclick="selectAdzanType('url')">🔗 URL Audio</button>
+       <button type="button" class="type-btn" id="btnAdzanUpload" onclick="selectAdzanType('upload')">📤 Upload MP3</button>
+      </div>
+      
+      <div id="adzanUrlPanel" class="slide-content-input active">
+       <div class="form-group">
+        <label class="form-label" for="inputAdzanUrl">URL Audio</label>
+        <input type="text" class="form-input" id="inputAdzanUrl" placeholder="https://example.com/adzan.mp3">
+       </div>
+      </div>
+      
+      <div id="adzanUploadPanel" class="slide-content-input">
+       <div class="form-group">
+        <label class="form-label">Upload File MP3</label>
+        <div class="file-upload-wrapper">
+         <label for="fileAdzan" class="file-upload-label"> 🎵 Klik untuk pilih file MP3 </label>
+         <input type="file" id="fileAdzan" class="file-upload-input" accept="audio/*" onchange="handleAdzanUpload()">
+        </div>
+        <div id="previewAdzanName" style="margin-top: 10px; color: #f4c430; font-weight: 600; text-align: center;"></div>
+       </div>
+      </div>
+      
+      <div class="form-group" style="margin-top: 15px;">
+       <label class="form-label">Test Suara</label>
+       <button type="button" class="btn" style="background: #2c3e50; color: #fff; width: 100%;" onclick="testAdzan()">▶️ Putar Test Adzan</button>
+       <button type="button" class="btn" style="background: #c0392b; color: #fff; width: 100%; margin-top: 10px; display: none;" id="stopTestBtn" onclick="stopTestAdzan()">⏹️ Stop Test</button>
+      </div>
+     </div><!-- Suara Beep Iqomah -->
+     <div class="settings-section">
+      <h3 class="section-title">🔊 Suara Beep Iqomah</h3>
+      <p style="color: #ffffff; opacity: 0.8; margin-bottom: 15px; font-size: 0.9em;">Suara beep akan berbunyi 10 detik sebelum waktu iqomah tiba</p>
+      
+      <div class="form-group">
+       <label class="form-label">Upload File Beep (MP3/WAV)</label>
+       <div class="file-upload-wrapper">
+        <label for="fileBeep" class="file-upload-label"> 🔔 Klik untuk pilih file Beep </label>
+        <input type="file" id="fileBeep" class="file-upload-input" accept="audio/*" onchange="handleBeepUpload()">
+       </div>
+       <div id="previewBeepName" style="margin-top: 10px; color: #f4c430; font-weight: 600; text-align: center;"></div>
+      </div>
+      
+      <div class="form-group" style="margin-top: 15px;">
+       <label class="form-label">Test Suara Beep</label>
+       <button type="button" class="btn" style="background: #2c3e50; color: #fff; width: 100%;" onclick="testBeep()">▶️ Putar Test Beep</button>
+       <button type="button" class="btn" style="background: #c0392b; color: #fff; width: 100%; margin-top: 10px; display: none;" id="stopTestBeepBtn" onclick="stopTestBeep()">⏹️ Stop Test Beep</button>
+      </div>
+     </div><!-- Save Button -->
+     <div class="save-section">
+      <button type="button" class="btn" style="background: #e67e22; color: #fff; margin-right: 10px;" onclick="resetToDemo()">🔄 Reset ke Mode Demo</button>
+      <button type="submit" class="btn btn-primary" id="saveBtn"> 💾 Simpan Pengaturan </button>
+     </div>
+    </form>
+   </div>
+  </div>
+  <script>
+    function resetToDemo() {
+      if(confirm('Apakah Anda yakin ingin mereset semua pengaturan ke Mode Demo? Data Anda akan diganti dengan data contoh.')) {
+        localStorage.removeItem('masjidSettings');
+        location.reload();
+      }
+    }
+
+    const ayatCollection = [
+      {
+        arab: "إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَوْقُوتًا",
+        terjemahan: "Sesungguhnya sholat itu adalah kewajiban yang ditentukan waktunya atas orang-orang yang beriman. (QS. An-Nisa: 103)"
+      },
+      {
+        arab: "وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ وَارْكَعُوا مَعَ الرَّاكِعِينَ",
+        terjemahan: "Dan dirikanlah sholat, tunaikanlah zakat dan ruku'lah beserta orang-orang yang ruku'. (QS. Al-Baqarah: 43)"
+      },
+      {
+        arab: "وَاسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ وَإِنَّهَا لَكَبِيرَةٌ إِلَّا عَلَى الْخَاشِعِينَ",
+        terjemahan: "Jadikanlah sabar dan sholat sebagai penolongmu. Dan sesungguhnya yang demikian itu sungguh berat, kecuali bagi orang-orang yang khusyuk. (QS. Al-Baqarah: 45)"
+      },
+      {
+        arab: "حَافِظُوا عَلَى الصَّلَوَاتِ وَالصَّلَاةِ الْوُسْطَى وَقُومُوا لِلَّهِ قَانِتِينَ",
+        terjemahan: "Peliharalah semua sholat dan sholat wustha. Dan berdirilah karena Allah dengan khusyu'. (QS. Al-Baqarah: 238)"
+      },
+      {
+        arab: "فَإِذَا قَضَيْتُمُ الصَّلَاةَ فَاذْكُرُوا اللَّهَ قِيَامًا وَقُعُودًا وَعَلَى جُنُوبِكُمْ",
+        terjemahan: "Maka apabila kamu telah menyelesaikan sholat, ingatlah Allah di waktu berdiri, di waktu duduk dan di waktu berbaring. (QS. An-Nisa: 103)"
+      },
+      {
+        arab: "إِنَّ الصَّلَاةَ تَنْهَى عَنِ الْفَحْشَاءِ وَالْمُنكَرِ",
+        terjemahan: "Sesungguhnya sholat itu mencegah dari perbuatan keji dan mungkar. (QS. Al-Ankabut: 45)"
+      },
+      {
+        arab: "قَدْ أَفْلَحَ الْمُؤْمِنُونَ الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ",
+        terjemahan: "Sesungguhnya beruntunglah orang-orang yang beriman, yaitu orang-orang yang khusyu' dalam sholatnya. (QS. Al-Mu'minun: 1-2)"
+      }
+    ];
+    
+    let currentAyatIndex = 0;
+    let currentSettings = null;
+    let mediaSlideInterval = null;
+    let donorCycleInterval = null;
+    let tempDonors = []; // Temporary list for settings
+    let slideTypes = {1: 'url', 2: 'url', 3: 'url', 4: 'url', 5: 'url'};
+    
+    const prayerNames = {
+      imsak: "Imsak",
+      subuh: "Subuh",
+      syuruq: "Syuruq",
+      dhuha: "Dhuha",
+      dzuhur: "Dzuhur",
+      ashar: "Ashar",
+      maghrib: "Maghrib",
+      isya: "Isya"
+    };
+    
+    const hijriMonths = [
+      "Muharram", "Safar", "Rabiul Awal", "Rabiul Akhir",
+      "Jumadil Awal", "Jumadil Akhir", "Rajab", "Sya'ban",
+      "Ramadhan", "Syawal", "Dzulqa'dah", "Dzulhijjah"
+    ];
+    
+    const dayNames = ["Ahad", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+    const monthNames = [
+      "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
+    
+    const defaultSettings = {
+      nama_masjid: "Masjid Raya Al-Iman (Demo)",
+      logo_masjid: "🕌",
+      alamat_masjid: "Jl. Demo Aplikasi No. 1, Kota Harapan",
+      waktu_imsak: "04:30",
+      waktu_subuh: "04:40",
+      waktu_syuruq: "05:55",
+      waktu_dhuha: "06:15",
+      waktu_dzuhur: "12:05",
+      waktu_ashar: "15:15",
+      waktu_maghrib: "18:00",
+      waktu_isya: "19:10",
+      running_text: "Selamat Datang di Mode Demo Aplikasi Jadwal Sholat • Silakan Cek Fitur Upload Excel & Laporan Keuangan • Hubungi Admin untuk Versi Lengkap",
+      panel_mode: "keuangan",
+      saldo_kas: "Rp 25.000.000",
+      pemasukan_bulan_ini: "Rp 10.500.000",
+      pengeluaran_bulan_ini: "Rp 4.200.000",
+      donors: [
+        { name: "Hamba Allah", amount: "Rp 1.000.000" },
+        { name: "H. Abdullah", amount: "Rp 2.500.000" },
+        { name: "Ibu Siti Aminah", amount: "Rp 500.000" },
+        { name: "Jamaah Subuh", amount: "Rp 300.000" },
+        { name: "Toko Berkah", amount: "Rp 1.500.000" }
+      ],
+      pengumuman_isi: "Kajian Rutin Setiap Sabtu Ba'da Maghrib bersama Ust. Fulan. Tema: 'Adab di Dalam Masjid'.",
+      slide_1_type: "url",
+      slide_1_content: "https://images.unsplash.com/photo-1542816417-0983c9c9ad53?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+      slide_2_type: "url",
+      slide_2_content: "https://images.unsplash.com/photo-1519817650390-64a93db51149?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+      slide_3_type: "url",
+      slide_3_content: "https://images.unsplash.com/photo-1554224154-260327c00c4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+      slide_4_type: "url",
+      slide_4_content: "",
+      slide_5_type: "url",
+      slide_5_content: "",
+      show_imsak: true,
+      show_subuh: true,
+      show_syuruq: true,
+      show_dhuha: true,
+      show_dzuhur: true,
+      show_ashar: true,
+      show_maghrib: true,
+      show_isya: true,
+      use_manual_date: false,
+      manual_date: "",
+      background_type: "gradient",
+      background_color: "#1a4d2e",
+      background_gradient_1: "#0f2b1d",
+      background_gradient_2: "#1a4d2e",
+      background_gradient_3: "#0f2b1d",
+      background_gradient_direction: "135deg",
+      background_image: "",
+      adzan_type: "url",
+      adzan_content: "",
+      beep_content: "",
+      show_border: true,
+      border_intensity: 30,
+      use_excel_schedule: false,
+      prayer_schedule: {} // Format: { "YYYY-MM-DD": { imsak: "04:30", subuh: "04:40", ... } }
+    };
+
+    let audioObj = null;
+    let beepObj = null;
+
+    // Load settings from localStorage
+    function loadSettings() {
+      const saved = localStorage.getItem('masjidSettings');
+      if (saved) {
+        // Merge saved settings with default settings to ensure new fields are present
+        const parsed = JSON.parse(saved);
+        currentSettings = { ...defaultSettings, ...parsed };
+      } else {
+        currentSettings = { ...defaultSettings };
+      }
+      updateDisplay();
+    }
+    
+    function selectPanelMode(mode) {
+      // Update button states
+      document.getElementById('btnModeKeuangan').classList.remove('active');
+      document.getElementById('btnModePengumuman').classList.remove('active');
+      
+      if (mode === 'keuangan') {
+        document.getElementById('btnModeKeuangan').classList.add('active');
+        document.getElementById('panelKeuangan').classList.add('active');
+        document.getElementById('panelPengumuman').classList.remove('active');
+      } else {
+        document.getElementById('btnModePengumuman').classList.add('active');
+        document.getElementById('panelPengumuman').classList.add('active');
+        document.getElementById('panelKeuangan').classList.remove('active');
+      }
+    }
+    
+    function selectBackgroundType(type) {
+      // Update button states
+      document.getElementById('btnBgSolid').classList.remove('active');
+      document.getElementById('btnBgGradient').classList.remove('active');
+      document.getElementById('btnBgImage').classList.remove('active');
+      
+      // Show/hide panels
+      document.getElementById('bgSolidPanel').classList.remove('active');
+      document.getElementById('bgGradientPanel').classList.remove('active');
+      document.getElementById('bgImagePanel').classList.remove('active');
+      
+      if (type === 'solid') {
+        document.getElementById('btnBgSolid').classList.add('active');
+        document.getElementById('bgSolidPanel').classList.add('active');
+      } else if (type === 'gradient') {
+        document.getElementById('btnBgGradient').classList.add('active');
+        document.getElementById('bgGradientPanel').classList.add('active');
+      } else if (type === 'image') {
+        document.getElementById('btnBgImage').classList.add('active');
+        document.getElementById('bgImagePanel').classList.add('active');
+      }
+    }
+    
+    function setPresetColor(color) {
+      document.getElementById('inputBgColor').value = color;
+    }
+    
+    function setPresetGradient(color1, color2, color3) {
+      document.getElementById('inputGradient1').value = color1;
+      document.getElementById('inputGradient2').value = color2;
+      document.getElementById('inputGradient3').value = color3;
+    }
+    
+    function selectSlideType(slideNum, type) {
+      slideTypes[slideNum] = type;
+      
+      let slideItem;
+      // Try to get slideItem from event
+      if (typeof event !== 'undefined' && event && event.target && event.target.closest) {
+        slideItem = event.target.closest('.slide-item');
+      }
+      
+      // Fallback: find by ID
+      if (!slideItem) {
+         const refElement = document.getElementById(`slide${slideNum}-url`);
+         if (refElement) slideItem = refElement.closest('.slide-item');
+      }
+
+      if (slideItem) {
+          // Update button states
+          const buttons = slideItem.querySelectorAll('.type-btn');
+          buttons.forEach(btn => btn.classList.remove('active'));
+          
+          if (typeof event !== 'undefined' && event && event.target && event.target.classList && event.target.classList.contains('type-btn')) {
+             event.target.classList.add('active');
+          } else {
+             // Programmatic update
+             if (type === 'url' && buttons[0]) buttons[0].classList.add('active');
+             if (type === 'upload' && buttons[1]) buttons[1].classList.add('active');
+          }
+      }
+      
+      // Show/hide content inputs
+      const urlInput = document.getElementById(`slide${slideNum}-url`);
+      const uploadInput = document.getElementById(`slide${slideNum}-upload`);
+      
+      if (urlInput) urlInput.classList.remove('active');
+      if (uploadInput) uploadInput.classList.remove('active');
+      
+      const targetInput = document.getElementById(`slide${slideNum}-${type}`);
+      if (targetInput) targetInput.classList.add('active');
+    }
+    
+    function handleBackgroundUpload() {
+      const fileInput = document.getElementById('fileBackground');
+      const file = fileInput.files[0];
+      
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const previewContainer = document.getElementById('previewBackground');
+          previewContainer.innerHTML = `<img src="${e.target.result}" class="preview-image" alt="Preview Background">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    
+    function resetBackground() {
+      document.getElementById('fileBackground').value = '';
+      document.getElementById('previewBackground').innerHTML = '';
+      
+      if (currentSettings) {
+        currentSettings.background_type = 'gradient';
+        currentSettings.background_color = '#1a4d2e';
+        currentSettings.background_gradient_1 = '#1a4d2e';
+        currentSettings.background_gradient_2 = '#2d5f3f';
+        currentSettings.background_gradient_3 = '#1a4d2e';
+        currentSettings.background_gradient_direction = '135deg';
+        currentSettings.background_image = '';
+        
+        localStorage.setItem('masjidSettings', JSON.stringify(currentSettings));
+        applyBackground();
+        
+        // Reset form inputs
+        selectBackgroundType('gradient');
+        document.getElementById('inputBgColor').value = '#1a4d2e';
+        document.getElementById('inputGradient1').value = '#1a4d2e';
+        document.getElementById('inputGradient2').value = '#2d5f3f';
+        document.getElementById('inputGradient3').value = '#1a4d2e';
+        document.getElementById('inputGradientDirection').value = '135deg';
+      }
+      
+      const message = document.createElement('div');
+      message.className = 'success-message';
+      message.textContent = '✅ Background berhasil direset ke default!';
+      message.style.marginTop = '10px';
+      
+      const resetBtn = event.target;
+      resetBtn.parentElement.appendChild(message);
+      
+      setTimeout(() => {
+        message.remove();
+      }, 2000);
+    }
+    
+    function applyBackground() {
+      const body = document.body;
+      
+      if (!currentSettings) return;
+      
+      const bgType = currentSettings.background_type || 'gradient';
+      
+      if (bgType === 'solid') {
+        const color = currentSettings.background_color || '#1a4d2e';
+        body.style.backgroundImage = '';
+        body.style.background = color;
+        document.getElementById('currentBackgroundPreview').textContent = `Warna Solid: ${color}`;
+      } else if (bgType === 'gradient') {
+        const color1 = currentSettings.background_gradient_1 || '#1a4d2e';
+        const color2 = currentSettings.background_gradient_2 || '#2d5f3f';
+        const color3 = currentSettings.background_gradient_3 || '#1a4d2e';
+        const direction = currentSettings.background_gradient_direction || '135deg';
+        
+        body.style.backgroundImage = '';
+        body.style.background = `linear-gradient(${direction}, ${color1} 0%, ${color2} 50%, ${color3} 100%)`;
+        document.getElementById('currentBackgroundPreview').textContent = `Gradient: ${color1} → ${color2} → ${color3}`;
+      } else if (bgType === 'image' && currentSettings.background_image) {
+        body.style.backgroundImage = `url(${currentSettings.background_image})`;
+        body.style.backgroundSize = 'cover';
+        body.style.backgroundPosition = 'center';
+        body.style.backgroundRepeat = 'no-repeat';
+        body.style.backgroundAttachment = 'fixed';
+        document.getElementById('currentBackgroundPreview').textContent = 'Background Gambar Custom';
+      } else {
+        body.style.backgroundImage = '';
+        body.style.background = 'linear-gradient(135deg, #1a4d2e 0%, #2d5f3f 50%, #1a4d2e 100%)';
+        document.getElementById('currentBackgroundPreview').textContent = 'Gradient Default';
+      }
+    }
+    
+    function applyBorderStyles() {
+      const check = document.getElementById('checkShowBorder');
+      const range = document.getElementById('rangeBorderIntensity');
+      const modal = document.getElementById('settingsModal');
+      
+      let show = true;
+      let intensity = 30;
+      
+      // Prioritize inputs if modal is open (for live preview)
+      if (check && range && modal && modal.classList.contains('active')) {
+        show = check.checked;
+        intensity = parseInt(range.value);
+        // Update label
+        const label = document.getElementById('borderIntensityValue');
+        if (label) label.textContent = intensity + '%';
+      } else if (currentSettings) {
+        // Fallback to saved settings
+        show = currentSettings.show_border !== false;
+        intensity = currentSettings.border_intensity !== undefined ? currentSettings.border_intensity : 30;
+      }
+      
+      const root = document.documentElement;
+      if (show) {
+        root.style.setProperty('--border-width', '2px');
+        root.style.setProperty('--border-alpha', intensity / 100);
+      } else {
+        root.style.setProperty('--border-width', '0px');
+        root.style.setProperty('--border-alpha', '0');
+      }
+    }
+
+    function handleFileUpload(slideNum) {
+      const fileInput = document.getElementById(`fileSlide${slideNum}`);
+      const file = fileInput.files[0];
+      
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const previewContainer = document.getElementById(`preview${slideNum}`);
+          previewContainer.innerHTML = `<img src="${e.target.result}" class="preview-image" alt="Preview">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    
+    function selectAdzanType(type) {
+      document.getElementById('btnAdzanUrl').classList.remove('active');
+      document.getElementById('btnAdzanUpload').classList.remove('active');
+      
+      document.getElementById('adzanUrlPanel').classList.remove('active');
+      document.getElementById('adzanUploadPanel').classList.remove('active');
+      
+      if (type === 'url') {
+        document.getElementById('btnAdzanUrl').classList.add('active');
+        document.getElementById('adzanUrlPanel').classList.add('active');
+      } else {
+        document.getElementById('btnAdzanUpload').classList.add('active');
+        document.getElementById('adzanUploadPanel').classList.add('active');
+      }
+    }
+    
+    function handleAdzanUpload() {
+      const fileInput = document.getElementById('fileAdzan');
+      const file = fileInput.files[0];
+      if (file) {
+        if (file.size > 2 * 1024 * 1024) { // 2MB limit
+          alert("File terlalu besar! Maksimal 2MB agar dapat disimpan.");
+          fileInput.value = ""; // Reset input
+          document.getElementById('previewAdzanName').textContent = "";
+          return;
+        }
+        document.getElementById('previewAdzanName').textContent = "File: " + file.name;
+      }
+    }
+    
+    function playAdzan() {
+      if (!currentSettings || !currentSettings.adzan_content) return;
+      
+      if (audioObj) {
+        audioObj.pause();
+        audioObj.currentTime = 0;
+      }
+      
+      audioObj = new Audio(currentSettings.adzan_content);
+      audioObj.play().catch(e => console.error("Error playing audio:", e));
+    }
+    
+    function testAdzan() {
+      let src = "";
+      if (document.getElementById('btnAdzanUrl').classList.contains('active')) {
+        src = document.getElementById('inputAdzanUrl').value;
+      } else {
+        const fileInput = document.getElementById('fileAdzan');
+        if (fileInput.files && fileInput.files[0]) {
+          src = URL.createObjectURL(fileInput.files[0]);
+        } else if (currentSettings && currentSettings.adzan_type === 'upload' && currentSettings.adzan_content) {
+          src = currentSettings.adzan_content;
+        }
+      }
+      
+      if (!src) {
+        alert("Silakan masukkan URL atau upload file terlebih dahulu.");
+        return;
+      }
+      
+      if (audioObj) {
+        audioObj.pause();
+        audioObj.currentTime = 0;
+      }
+      
+      audioObj = new Audio(src);
+      audioObj.play().then(() => {
+        document.getElementById('stopTestBtn').style.display = 'block';
+      }).catch(e => {
+        alert("Gagal memutar audio: " + e.message);
+      });
+      
+      audioObj.onended = function() {
+        document.getElementById('stopTestBtn').style.display = 'none';
+      };
+    }
+    
+    function stopTestAdzan() {
+      if (audioObj) {
+        audioObj.pause();
+        audioObj.currentTime = 0;
+      }
+      document.getElementById('stopTestBtn').style.display = 'none';
+    }
+    
+    function handleBeepUpload() {
+      const fileInput = document.getElementById('fileBeep');
+      const file = fileInput.files[0];
+      if (file) {
+        if (file.size > 2 * 1024 * 1024) { // 2MB limit
+          alert("File terlalu besar! Maksimal 2MB agar dapat disimpan.");
+          fileInput.value = ""; // Reset input
+          document.getElementById('previewBeepName').textContent = "";
+          return;
+        }
+        document.getElementById('previewBeepName').textContent = "File: " + file.name;
+      }
+    }
+    
+    function testBeep() {
+      let src = "";
+      const fileInput = document.getElementById('fileBeep');
+      if (fileInput.files && fileInput.files[0]) {
+        src = URL.createObjectURL(fileInput.files[0]);
+      } else if (currentSettings && currentSettings.beep_content) {
+        src = currentSettings.beep_content;
+      }
+      
+      if (!src) {
+        alert("Silakan upload file beep terlebih dahulu.");
+        return;
+      }
+      
+      if (beepObj) {
+        beepObj.pause();
+        beepObj.currentTime = 0;
+      }
+      
+      beepObj = new Audio(src);
+      beepObj.play().then(() => {
+        document.getElementById('stopTestBeepBtn').style.display = 'block';
+      }).catch(e => {
+        alert("Gagal memutar audio beep: " + e.message);
+      });
+      
+      beepObj.onended = function() {
+        document.getElementById('stopTestBeepBtn').style.display = 'none';
+      };
+    }
+    
+    function stopTestBeep() {
+      if (beepObj) {
+        beepObj.pause();
+        beepObj.currentTime = 0;
+      }
+      document.getElementById('stopTestBeepBtn').style.display = 'none';
+    }
+    
+    function playBeep() {
+      if (!currentSettings || !currentSettings.beep_content) return;
+      
+      if (beepObj) {
+        beepObj.pause();
+        beepObj.currentTime = 0;
+      }
+      
+      beepObj = new Audio(currentSettings.beep_content);
+      beepObj.play().catch(e => console.error("Error playing beep:", e));
+    }
+    
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('currentTime').textContent = `${hours}:${minutes}:${seconds}`;
+    }
+    
+    function updateDates() {
+      let now;
+      
+      if (currentSettings && currentSettings.use_manual_date && currentSettings.manual_date) {
+        now = new Date(currentSettings.manual_date);
+      } else {
+        now = new Date();
+      }
+      
+      const dayName = dayNames[now.getDay()];
+      const date = now.getDate();
+      const monthName = monthNames[now.getMonth()];
+      const year = now.getFullYear();
+      
+      document.getElementById('dateMasehi').textContent = `${dayName}, ${date} ${monthName} ${year}`;
+      
+      const hijriDate = convertToHijri(now);
+      document.getElementById('dateHijri').textContent = `${hijriDate.day} ${hijriMonths[hijriDate.month - 1]} ${hijriDate.year} H`;
+    }
+    
+    function convertToHijri(gregorianDate) {
+      const adjustment = 0;
+      const today = new Date(gregorianDate);
+      if (adjustment) {
+        const adjustmilli = 1000 * 60 * 60 * 24 * adjustment;
+        const todaymilli = today.getTime() + adjustmilli;
+        today.setTime(todaymilli);
+      }
+      const day = today.getDate();
+      const month = today.getMonth();
+      const year = today.getFullYear();
+      let m = month + 1;
+      let y = year;
+      if (m < 3) {
+        y -= 1;
+        m += 12;
+      }
+      
+      const a = Math.floor(y / 100);
+      const b = 2 - a + Math.floor(a / 4);
+      const jd = Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + day + b - 1524;
+      
+      const l = jd - 1948440 + 10632;
+      const n = Math.floor((l - 1) / 10631);
+      const l2 = l - 10631 * n + 354;
+      const j = (Math.floor((10985 - l2) / 5316)) * (Math.floor(50 * l2 / 17719)) + (Math.floor(l2 / 5670)) * (Math.floor(43 * l2 / 15238));
+      const l3 = l2 - (Math.floor((30 - j) / 15)) * (Math.floor((17719 * j) / 50)) - (Math.floor(j / 16)) * (Math.floor((15238 * j) / 43)) + 29;
+      const hijriMonth = Math.floor((24 * l3) / 709);
+      const hijriDay = l3 - Math.floor((709 * hijriMonth) / 24);
+      const hijriYear = 30 * n + j - 30;
+      
+      return { day: hijriDay, month: hijriMonth, year: hijriYear };
+    }
+    
+    function parseTime(timeStr) {
+      if (!timeStr) return null;
+      const [hours, minutes] = timeStr.split(':').map(Number);
+      const now = new Date();
+      const time = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0);
+      return time;
+    }
+    
+    let adzanShownFor = null;
+    
+    function updateCountdown() {
+      const settings = currentSettings || defaultSettings;
+      const now = new Date();
+      
+      // Determine effective prayer times (Static vs Excel)
+      let times = {
+        imsak: settings.waktu_imsak,
+        subuh: settings.waktu_subuh,
+        syuruq: settings.waktu_syuruq,
+        dhuha: settings.waktu_dhuha,
+        dzuhur: settings.waktu_dzuhur,
+        ashar: settings.waktu_ashar,
+        maghrib: settings.waktu_maghrib,
+        isya: settings.waktu_isya
+      };
+
+      if (settings.use_excel_schedule && settings.prayer_schedule) {
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const todayKey = `${year}-${month}-${day}`;
+        
+        if (settings.prayer_schedule[todayKey]) {
+          const schedule = settings.prayer_schedule[todayKey];
+          times = { ...times, ...schedule };
+        }
+      }
+
+      const prayers = [];
+      
+      // Build prayer list with determined times
+      if (times.imsak && settings.show_imsak !== false) {
+        prayers.push({ name: 'imsak', time: parseTime(times.imsak) });
+      }
+      if (times.subuh && settings.show_subuh !== false) {
+        prayers.push({ name: 'subuh', time: parseTime(times.subuh) });
+      }
+      if (times.syuruq && settings.show_syuruq !== false) {
+        prayers.push({ name: 'syuruq', time: parseTime(times.syuruq) });
+      }
+      if (times.dhuha && settings.show_dhuha !== false) {
+        prayers.push({ name: 'dhuha', time: parseTime(times.dhuha) });
+      }
+      if (times.dzuhur && settings.show_dzuhur !== false) {
+        prayers.push({ name: 'dzuhur', time: parseTime(times.dzuhur) });
+      }
+      if (times.ashar && settings.show_ashar !== false) {
+        prayers.push({ name: 'ashar', time: parseTime(times.ashar) });
+      }
+      if (times.maghrib && settings.show_maghrib !== false) {
+        prayers.push({ name: 'maghrib', time: parseTime(times.maghrib) });
+      }
+      if (times.isya && settings.show_isya !== false) {
+        prayers.push({ name: 'isya', time: parseTime(times.isya) });
+      }
+      
+      // Filter valid prayers
+      const validPrayers = prayers.filter(p => p.time !== null);
+      
+      if (validPrayers.length === 0) {
+        document.getElementById('countdownLabel').textContent = 'Menunggu Data Waktu Sholat';
+        document.getElementById('countdownTime').textContent = '00:00:00';
+        return;
+      }
+      
+      // Check if it's exactly prayer time
+      for (let prayer of validPrayers) {
+        // Use minute precision
+        const prayerHour = prayer.time.getHours();
+        const prayerMinute = prayer.time.getMinutes();
+        
+        if (now.getHours() === prayerHour && now.getMinutes() === prayerMinute) {
+           const prayerKey = `${prayer.name}-${now.getDate()}`; // Key by Name and Date (triggers once per day per prayer)
+           
+           if (adzanShownFor !== prayerKey) {
+             adzanShownFor = prayerKey;
+             showAdzanNotification(prayer.name);
+           }
+           break;
+        }
+      }
+      
+      // Find next prayer after current time
+      let nextPrayer = null;
+      for (let prayer of validPrayers) {
+        if (prayer.time > now) {
+          nextPrayer = prayer;
+          break;
+        }
+      }
+      
+      // If no prayer found today, use first prayer of tomorrow
+      if (!nextPrayer) {
+        nextPrayer = { ...validPrayers[0] };
+        nextPrayer.time = new Date(nextPrayer.time);
+        nextPrayer.time.setDate(nextPrayer.time.getDate() + 1);
+      }
+      
+      const diff = nextPrayer.time.getTime() - now.getTime();
+      
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      const prayerNameText = prayerNames[nextPrayer.name] || nextPrayer.name;
+      document.getElementById('countdownLabel').textContent = `Menuju Sholat ${prayerNameText}`;
+      document.getElementById('countdownTime').textContent = 
+        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      
+      // Highlight active prayer card
+      document.querySelectorAll('.prayer-card').forEach(card => {
+        card.classList.remove('active');
+      });
+      const activeCard = document.querySelector(`[data-prayer="${nextPrayer.name}"]`);
+      if (activeCard && !activeCard.classList.contains('hidden')) {
+        activeCard.classList.add('active');
+      }
+    }
+    
+    let iqomahCountdownInterval = null;
+    
+    function showAdzanNotification(prayerName) {
+      const mediaSection = document.getElementById('mediaSection');
+      const prayerNameText = prayerNames[prayerName] || prayerName;
+      
+      // Play Adzan Audio
+      playAdzan();
+      
+      // Save current slides
+      const currentSlides = mediaSection.innerHTML;
+      
+      // Show adzan notification
+      mediaSection.innerHTML = `
+        <div class="media-slide active" style="flex-direction: column; gap: 2px; text-align: center; padding: 6px;">
+          <div style="font-size: 1.2em; animation: pulse 1.5s ease-in-out infinite;">🕌</div>
+          <div style="font-size: 0.8em; font-weight: 700; color: #f4c430; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); animation: pulse 1.5s ease-in-out infinite;">
+            SAATNYA ADZAN
+          </div>
+          <div style="font-size: 0.7em; font-weight: 700; color: #ffffff; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+            ${prayerNameText.toUpperCase()}
+          </div>
+        </div>
+      `;
+      
+      // Stop normal slide animation
+      if (mediaSlideInterval) {
+        clearInterval(mediaSlideInterval);
+      }
+      
+      // After 30 seconds, show iqomah countdown
+      setTimeout(() => {
+        showIqomahCountdown(prayerNameText, currentSlides);
+      }, 30000);
+    }
+    
+    function showIqomahCountdown(prayerNameText, originalSlides) {
+      const mediaSection = document.getElementById('mediaSection');
+      
+      // Create iqomah notification with countdown
+      mediaSection.innerHTML = `
+        <div class="media-slide active" style="flex-direction: column; gap: 1px; text-align: center; padding: 3px;">
+          <div style="font-size: 0.6em; animation: pulse 1.5s ease-in-out infinite;">🕌</div>
+          <div style="font-size: 0.35em; font-weight: 700; color: #f4c430; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+            IQOMAH
+          </div>
+          <div style="font-size: 0.3em; font-weight: 600; color: #ffffff; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+            10 Menit Menuju Waktu Iqomah
+          </div>
+          <div style="font-size: 0.3em; font-weight: 600; color: #ffffff; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); opacity: 0.8;">
+            ${prayerNameText.toUpperCase()}
+          </div>
+          <div id="iqomahCountdownDisplay" style="font-size: 0.6em; font-weight: 700; color: #f4c430; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); margin-top: 1px;">
+            10:00
+          </div>
+        </div>
+      `;
+      
+      // Start 10 minute countdown
+      let secondsLeft = 600; // 10 minutes = 600 seconds
+      
+      // Clear any existing interval
+      if (iqomahCountdownInterval) {
+        clearInterval(iqomahCountdownInterval);
+      }
+      
+      iqomahCountdownInterval = setInterval(() => {
+        secondsLeft--;
+        
+        const minutes = Math.floor(secondsLeft / 60);
+        const seconds = secondsLeft % 60;
+        
+        const countdownDisplay = document.getElementById('iqomahCountdownDisplay');
+        if (countdownDisplay) {
+          countdownDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+        
+        // Play beep sound 10 seconds before iqomah
+        if (secondsLeft === 10) {
+          playBeep();
+        }
+        
+        // When countdown reaches 0, restore original slides and reset adzan state
+        if (secondsLeft <= 0) {
+          clearInterval(iqomahCountdownInterval);
+          iqomahCountdownInterval = null;
+          
+          // DO NOT RESET adzanShownFor HERE because it might still be within the same minute
+          // We rely on the date-based key to prevent re-triggering for the rest of the day
+          
+          // Restore original slides
+          mediaSection.innerHTML = originalSlides;
+          
+          // Restart slide animation
+          animateMediaSlides();
+        }
+      }, 1000);
+    }
+    
+    function animateMediaSlides() {
+      if (mediaSlideInterval) {
+        clearInterval(mediaSlideInterval);
+      }
+      
+      const slides = document.querySelectorAll('.media-slide');
+      if (slides.length === 0) return;
+      
+      let currentSlide = 0;
+      
+      mediaSlideInterval = setInterval(() => {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add('active');
+      }, 4000);
+    }
+    
+    function rotateAyat() {
+      const ayatArab = document.getElementById('ayatArab');
+      const ayatTerjemahan = document.getElementById('ayatTerjemahan');
+      
+      // Add fade-out animation
+      ayatArab.classList.add('fade-out');
+      ayatTerjemahan.classList.add('fade-out');
+      
+      // Wait for fade-out to complete, then change content and fade-in
+      setTimeout(() => {
+        currentAyatIndex = (currentAyatIndex + 1) % ayatCollection.length;
+        const currentAyat = ayatCollection[currentAyatIndex];
+        
+        ayatArab.textContent = currentAyat.arab;
+        ayatTerjemahan.textContent = currentAyat.terjemahan;
+        
+        // Remove fade-out and add fade-in
+        ayatArab.classList.remove('fade-out');
+        ayatTerjemahan.classList.remove('fade-out');
+        ayatArab.classList.add('fade-in');
+        ayatTerjemahan.classList.add('fade-in');
+        
+        // Remove fade-in class after animation completes
+        setTimeout(() => {
+          ayatArab.classList.remove('fade-in');
+          ayatTerjemahan.classList.remove('fade-in');
+        }, 800);
+      }, 800);
+    }
+    
+    function updateDonorsDisplay() {
+      if (donorCycleInterval) clearInterval(donorCycleInterval);
+      
+      const donors = currentSettings.donors || [];
+      const nameEl = document.getElementById('donorName');
+      const amountEl = document.getElementById('donorAmount');
+      
+      if (!nameEl || !amountEl) return;
+      
+      if (donors.length === 0) {
+        nameEl.textContent = '-';
+        amountEl.textContent = '-';
+        return;
+      }
+      
+      let currentIndex = 0;
+      
+      const showDonor = () => {
+        // Add fade effect
+        nameEl.style.opacity = 0;
+        amountEl.style.opacity = 0;
+        
+        setTimeout(() => {
+          const donor = donors[currentIndex];
+          nameEl.textContent = donor.name;
+          amountEl.textContent = donor.amount;
+          
+          nameEl.style.opacity = 1;
+          amountEl.style.opacity = 1;
+          
+          currentIndex = (currentIndex + 1) % donors.length;
+        }, 500);
+      };
+      
+      showDonor(); // Show first immediately
+      
+      if (donors.length > 1) {
+        donorCycleInterval = setInterval(showDonor, 4000); // Cycle every 4 seconds
+      }
+    }
+
+    function updateDisplay(skipMediaUpdate = false) {
+      if (!currentSettings) return;
+      
+      // Update masjid info
+      document.getElementById('masjidName').textContent = currentSettings.nama_masjid;
+      document.getElementById('masjidAddress').textContent = currentSettings.alamat_masjid;
+      document.getElementById('masjidLogo').textContent = currentSettings.logo_masjid || '🕌';
+      
+      // Determine Prayer Times (Static vs Excel)
+      let times = {
+        imsak: currentSettings.waktu_imsak,
+        subuh: currentSettings.waktu_subuh,
+        syuruq: currentSettings.waktu_syuruq,
+        dhuha: currentSettings.waktu_dhuha,
+        dzuhur: currentSettings.waktu_dzuhur,
+        ashar: currentSettings.waktu_ashar,
+        maghrib: currentSettings.waktu_maghrib,
+        isya: currentSettings.waktu_isya
+      };
+
+      if (currentSettings.use_excel_schedule && currentSettings.prayer_schedule) {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const todayKey = `${year}-${month}-${day}`;
+        
+        if (currentSettings.prayer_schedule[todayKey]) {
+          // Override with Excel data
+          const schedule = currentSettings.prayer_schedule[todayKey];
+          times = { ...times, ...schedule };
+          
+          // Optional: Visual indicator that schedule is active (maybe log or small UI dot)
+        }
+      }
+
+      // Update prayer times display
+      document.getElementById('timeImsak').textContent = times.imsak;
+      document.getElementById('timeSubuh').textContent = times.subuh;
+      document.getElementById('timeSyuruq').textContent = times.syuruq;
+      document.getElementById('timeDhuha').textContent = times.dhuha;
+      document.getElementById('timeDzuhur').textContent = times.dzuhur;
+      document.getElementById('timeAshar').textContent = times.ashar;
+      document.getElementById('timeMaghrib').textContent = times.maghrib;
+      document.getElementById('timeIsya').textContent = times.isya;
+      
+      // Show/hide prayer cards
+      document.querySelector('[data-prayer="imsak"]').classList.toggle('hidden', !currentSettings.show_imsak);
+      document.querySelector('[data-prayer="subuh"]').classList.toggle('hidden', !currentSettings.show_subuh);
+      document.querySelector('[data-prayer="syuruq"]').classList.toggle('hidden', !currentSettings.show_syuruq);
+      document.querySelector('[data-prayer="dhuha"]').classList.toggle('hidden', !currentSettings.show_dhuha);
+      document.querySelector('[data-prayer="dzuhur"]').classList.toggle('hidden', !currentSettings.show_dzuhur);
+      document.querySelector('[data-prayer="ashar"]').classList.toggle('hidden', !currentSettings.show_ashar);
+      document.querySelector('[data-prayer="maghrib"]').classList.toggle('hidden', !currentSettings.show_maghrib);
+      document.querySelector('[data-prayer="isya"]').classList.toggle('hidden', !currentSettings.show_isya);
+      
+      // Update running text
+      document.getElementById('runningText').textContent = currentSettings.running_text;
+      
+      // Update finance or announcement panel based on mode
+      const panelMode = currentSettings.panel_mode || 'keuangan';
+      
+      if (panelMode === 'pengumuman') {
+        document.getElementById('panelTitle').textContent = '📢 Pengumuman';
+        document.getElementById('financeDisplay').style.display = 'none';
+        document.getElementById('pengumumanDisplay').style.display = 'block';
+        document.getElementById('pengumumanIsiDisplay').textContent = currentSettings.pengumuman_isi || 'Belum ada pengumuman.';
+      } else {
+        document.getElementById('panelTitle').textContent = '💰 Keuangan Masjid';
+        document.getElementById('financeDisplay').style.display = 'grid';
+        document.getElementById('pengumumanDisplay').style.display = 'none';
+        document.getElementById('financeKas').textContent = currentSettings.saldo_kas;
+        document.getElementById('financePemasukan').textContent = currentSettings.pemasukan_bulan_ini;
+        document.getElementById('financePengeluaran').textContent = currentSettings.pengeluaran_bulan_ini;
+        updateDonorsDisplay();
+      }
+      
+      // Update media slides only if not skipped
+      if (!skipMediaUpdate) {
+        updateMediaSlides();
+      }
+      
+      // Update dates
+      updateDates();
+      
+      // Update countdown
+      updateCountdown();
+      
+      // Apply background
+      applyBackground();
+      
+      // Apply border styles
+      applyBorderStyles();
+    }
+    
+    function updateMediaSlides() {
+      if (!currentSettings) return;
+      
+      const mediaSection = document.getElementById('mediaSection');
+      const existingSlides = mediaSection.querySelectorAll('.media-slide');
+      
+      // Build new slides data
+      const newSlidesData = [];
+      for (let i = 1; i <= 5; i++) {
+        const slideType = currentSettings[`slide_${i}_type`];
+        const slideContent = currentSettings[`slide_${i}_content`];
+        
+        if (slideContent) {
+          newSlidesData.push({
+            index: i,
+            type: slideType,
+            content: slideContent
+          });
+        }
+      }
+      
+      // Check if slides actually changed
+      let needsUpdate = existingSlides.length !== newSlidesData.length;
+      
+      if (!needsUpdate) {
+        for (let i = 0; i < newSlidesData.length; i++) {
+          const slide = existingSlides[i];
+          const newData = newSlidesData[i];
+          
+          if (slide && slide.querySelector('img')) {
+            const img = slide.querySelector('img');
+            if (img.src !== newData.content) {
+              needsUpdate = true;
+              break;
+            }
+          } else {
+            needsUpdate = true;
+            break;
+          }
+        }
+      }
+      
+      // Only update if content changed
+      if (!needsUpdate) return;
+      
+      // Clear and rebuild slides
+      mediaSection.innerHTML = '';
+      
+      newSlidesData.forEach((slideData, index) => {
+        const slide = document.createElement('div');
+        slide.className = 'media-slide';
+        if (index === 0) slide.classList.add('active');
+        
+        if (slideData.type === 'url' || slideData.type === 'upload') {
+          const img = document.createElement('img');
+          img.src = slideData.content;
+          img.onerror = function() {
+            this.style.display = 'none';
+            this.alt = 'Gambar gagal dimuat';
+          };
+          slide.appendChild(img);
+        }
+        
+        mediaSection.appendChild(slide);
+      });
+      
+      // Restart animation only if slides were actually updated
+      animateMediaSlides();
+    }
+    
+    // Donor Management Functions
+    function renderDonorsInSettings() {
+      const container = document.getElementById('donorListContainer');
+      container.innerHTML = '';
+      
+      if (tempDonors.length === 0) {
+        container.innerHTML = '<div style="text-align: center; color: rgba(255,255,255,0.5); padding: 10px;">Belum ada donatur</div>';
+        return;
+      }
+
+      tempDonors.forEach((donor, index) => {
+        const item = document.createElement('div');
+        item.style.cssText = 'display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 6px; margin-bottom: 8px; border: 1px solid rgba(244, 196, 48, 0.2);';
+        
+        item.innerHTML = `
+          <div style="flex: 1;">
+            <div style="font-weight: bold; color: #fff;">${donor.name}</div>
+            <div style="font-size: 0.9em; color: #f4c430;">${donor.amount}</div>
+          </div>
+          <button type="button" onclick="removeDonorFromList(${index})" style="background: #c0392b; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer; margin-left: 10px;">🗑️</button>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function addDonorToList() {
+      const nameInput = document.getElementById('inputDonorName');
+      const amountInput = document.getElementById('inputDonorAmount');
+      
+      const name = nameInput.value.trim();
+      const amount = amountInput.value.trim();
+      
+      if (!name || !amount) {
+        alert("Mohon isi Nama dan Nominal donatur!");
+        return;
+      }
+      
+      tempDonors.push({ name, amount });
+      renderDonorsInSettings();
+      
+      // Clear inputs
+      nameInput.value = '';
+      amountInput.value = '';
+      nameInput.focus();
+    }
+
+    function removeDonorFromList(index) {
+      if (confirm('Hapus donatur ini?')) {
+        tempDonors.splice(index, 1);
+        renderDonorsInSettings();
+      }
+    }
+
+    let tempSchedule = {};
+
+    function toggleExcelPanel() {
+      const isChecked = document.getElementById('checkUseExcel').checked;
+      const panel = document.getElementById('excelUploadPanel');
+      panel.style.display = isChecked ? 'block' : 'none';
+    }
+
+    async function handleScheduleUpload() {
+      const fileInput = document.getElementById('fileExcelSchedule');
+      const statusDiv = document.getElementById('excelStatus');
+      
+      if (!fileInput.files || !fileInput.files[0]) return;
+      
+      const file = fileInput.files[0];
+      statusDiv.style.display = 'block';
+      statusDiv.style.background = 'rgba(244, 196, 48, 0.2)';
+      statusDiv.style.color = '#f4c430';
+      statusDiv.textContent = '⏳ Membaca file Excel...';
+      
+      try {
+        const data = await file.arrayBuffer();
+        const workbook = XLSX.read(data);
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { raw: false }); // raw: false to get formatted strings
+        
+        if (jsonData.length === 0) {
+          throw new Error("File Excel kosong atau format salah");
+        }
+        
+        // Parse data
+        tempSchedule = {};
+        let successCount = 0;
+        
+        jsonData.forEach(row => {
+          // Flexible key matching (case insensitive)
+          const keys = Object.keys(row);
+          const getKey = (target) => keys.find(k => k.toLowerCase().includes(target));
+          
+          const dateKey = getKey('tanggal') || getKey('date');
+          
+          if (row[dateKey]) {
+            // Parse date. Assuming Excel might give "YYYY-MM-DD" or "DD/MM/YYYY" or Excel Serial Date
+            let dateStr = row[dateKey];
+            
+            // Try to standardize date to YYYY-MM-DD
+            // Simple check if it's already YYYY-MM-DD
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+               // Try parsing
+               const d = new Date(dateStr);
+               if (!isNaN(d.getTime())) {
+                 const year = d.getFullYear();
+                 const month = String(d.getMonth() + 1).padStart(2, '0');
+                 const day = String(d.getDate()).padStart(2, '0');
+                 dateStr = `${year}-${month}-${day}`;
+               }
+            }
+
+            // Map prayers
+            const times = {};
+            const mapTime = (name, aliases) => {
+              const k = keys.find(key => {
+                 const lower = key.toLowerCase();
+                 return lower === name || aliases.some(a => lower.includes(a));
+              });
+              if (k && row[k]) {
+                // Ensure HH:mm format
+                let t = row[k].trim();
+                // Simple validation for HH:mm
+                if (t.length === 5 && t.includes(':')) {
+                   times[name] = t;
+                } else if (t.length > 5) {
+                   // maybe HH:mm:ss
+                   times[name] = t.substring(0, 5);
+                }
+              }
+            };
+            
+            mapTime('imsak', []);
+            mapTime('subuh', []);
+            mapTime('syuruq', ['terbit']);
+            mapTime('dhuha', []);
+            mapTime('dzuhur', ['zuhur']);
+            mapTime('ashar', ['asar']);
+            mapTime('maghrib', ['magrib']);
+            mapTime('isya', []);
+            
+            if (Object.keys(times).length >= 5) { // At least main prayers
+               tempSchedule[dateStr] = times;
+               successCount++;
+            }
+          }
+        });
+        
+        if (successCount > 0) {
+          statusDiv.style.background = 'rgba(74, 222, 128, 0.2)';
+          statusDiv.style.color = '#4ade80';
+          statusDiv.textContent = `✅ Berhasil membaca ${successCount} baris jadwal. Jangan lupa klik Simpan!`;
+        } else {
+          throw new Error("Tidak ada data jadwal valid yang ditemukan. Pastikan nama kolom benar.");
+        }
+        
+      } catch (error) {
+        console.error(error);
+        statusDiv.style.background = 'rgba(239, 68, 68, 0.2)';
+        statusDiv.style.color = '#ef4444';
+        statusDiv.textContent = '❌ Gagal: ' + error.message;
+      }
+    }
+    
+    function downloadExcelTemplate() {
+      // Create a dummy workbook
+      const ws_data = [
+        ["Tanggal", "Imsak", "Subuh", "Syuruq", "Dhuha", "Dzuhur", "Ashar", "Maghrib", "Isya"],
+        ["2024-01-01", "04:30", "04:40", "05:55", "06:15", "12:05", "15:15", "18:00", "19:10"],
+        ["2024-01-02", "04:31", "04:41", "05:56", "06:16", "12:06", "15:16", "18:01", "19:11"]
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(ws_data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Jadwal Sholat");
+      XLSX.writeFile(wb, "Template_Jadwal_Sholat.xlsx");
+    }
+
+    function openSettings() {
+      const modal = document.getElementById('settingsModal');
+      modal.classList.add('active');
+      
+      // Populate form with current settings
+      if (currentSettings) {
+        document.getElementById('inputNamaMasjid').value = currentSettings.nama_masjid || '';
+        document.getElementById('inputLogoMasjid').value = currentSettings.logo_masjid || '';
+        document.getElementById('inputAlamatMasjid').value = currentSettings.alamat_masjid || '';
+        document.getElementById('inputImsak').value = currentSettings.waktu_imsak || '';
+        document.getElementById('inputSubuh').value = currentSettings.waktu_subuh || '';
+        document.getElementById('inputSyuruq').value = currentSettings.waktu_syuruq || '';
+        document.getElementById('inputDhuha').value = currentSettings.waktu_dhuha || '';
+        document.getElementById('inputDzuhur').value = currentSettings.waktu_dzuhur || '';
+        document.getElementById('inputAshar').value = currentSettings.waktu_ashar || '';
+        document.getElementById('inputMaghrib').value = currentSettings.waktu_maghrib || '';
+        document.getElementById('inputIsya').value = currentSettings.waktu_isya || '';
+        document.getElementById('inputSaldoKas').value = currentSettings.saldo_kas || '';
+        document.getElementById('inputPemasukan').value = currentSettings.pemasukan_bulan_ini || '';
+        document.getElementById('inputPengeluaran').value = currentSettings.pengeluaran_bulan_ini || '';
+        
+        // Load Donors
+        tempDonors = currentSettings.donors ? [...currentSettings.donors] : [];
+        renderDonorsInSettings();
+
+        document.getElementById('inputRunningText').value = currentSettings.running_text || '';
+        document.getElementById('hideImsak').checked = !currentSettings.show_imsak;
+        document.getElementById('hideSyuruq').checked = !currentSettings.show_syuruq;
+        document.getElementById('hideDhuha').checked = !currentSettings.show_dhuha;
+        document.getElementById('useManualDate').checked = currentSettings.use_manual_date || false;
+        document.getElementById('inputManualDate').value = currentSettings.manual_date || '';
+        
+        // Load panel mode
+        const panelMode = currentSettings.panel_mode || 'keuangan';
+        selectPanelMode(panelMode);
+        
+        // Load pengumuman data
+        document.getElementById('inputPengumumanIsi').value = currentSettings.pengumuman_isi || '';
+        
+        // Load background settings
+        const bgType = currentSettings.background_type || 'gradient';
+        selectBackgroundType(bgType);
+        
+        document.getElementById('inputBgColor').value = currentSettings.background_color || '#1a4d2e';
+        document.getElementById('inputGradient1').value = currentSettings.background_gradient_1 || '#1a4d2e';
+        document.getElementById('inputGradient2').value = currentSettings.background_gradient_2 || '#2d5f3f';
+        document.getElementById('inputGradient3').value = currentSettings.background_gradient_3 || '#1a4d2e';
+        document.getElementById('inputGradientDirection').value = currentSettings.background_gradient_direction || '135deg';
+        
+        if (currentSettings.background_image) {
+          document.getElementById('previewBackground').innerHTML = 
+            `<img src="${currentSettings.background_image}" class="preview-image" alt="Preview Background">`;
+        }
+        
+        // Load slide settings
+        for (let i = 1; i <= 5; i++) {
+          const slideType = currentSettings[`slide_${i}_type`] || 'url';
+          const slideContent = currentSettings[`slide_${i}_content`] || '';
+          
+          slideTypes[i] = slideType;
+          selectSlideType(i, slideType);
+          
+          if (slideType === 'url') {
+            document.getElementById(`inputSlide${i}Url`).value = slideContent;
+          } else if (slideType === 'upload' && slideContent) {
+            document.getElementById(`preview${i}`).innerHTML = 
+              `<img src="${slideContent}" class="preview-image" alt="Preview">`;
+          }
+        }
+        
+        // Load Adzan settings
+        const adzanType = currentSettings.adzan_type || 'url';
+        selectAdzanType(adzanType);
+        
+        if (adzanType === 'url') {
+          document.getElementById('inputAdzanUrl').value = currentSettings.adzan_content || '';
+        } else if (adzanType === 'upload' && currentSettings.adzan_content) {
+           document.getElementById('previewAdzanName').textContent = "File MP3 Tersimpan";
+        }
+        
+        // Load Beep settings
+        if (currentSettings.beep_content) {
+           document.getElementById('previewBeepName').textContent = "File Beep Tersimpan";
+        }
+        
+        // Load Border settings
+        document.getElementById('checkShowBorder').checked = currentSettings.show_border !== false;
+        const borderIntensity = currentSettings.border_intensity !== undefined ? currentSettings.border_intensity : 30;
+        document.getElementById('rangeBorderIntensity').value = borderIntensity;
+        document.getElementById('borderIntensityValue').textContent = borderIntensity + '%';
+        
+        // Load Excel settings
+        document.getElementById('checkUseExcel').checked = currentSettings.use_excel_schedule || false;
+        toggleExcelPanel();
+        if (currentSettings.prayer_schedule && Object.keys(currentSettings.prayer_schedule).length > 0) {
+           tempSchedule = { ...currentSettings.prayer_schedule };
+           const count = Object.keys(tempSchedule).length;
+           const statusDiv = document.getElementById('excelStatus');
+           statusDiv.style.display = 'block';
+           statusDiv.style.background = 'rgba(74, 222, 128, 0.2)';
+           statusDiv.style.color = '#4ade80';
+           statusDiv.textContent = `✅ ${count} Jadwal tersimpan.`;
+        }
+      }
+    }
+    
+    function closeSettings() {
+      const modal = document.getElementById('settingsModal');
+      modal.classList.remove('active');
+      updateDisplay(); // Revert any unsaved live preview changes
+    }
+    
+    async function saveSettings(event) {
+      event.preventDefault();
+      
+      const saveBtn = document.getElementById('saveBtn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = '⏳ Menyimpan...';
+      
+      try {
+        // Determine panel mode
+        const panelMode = document.getElementById('btnModePengumuman').classList.contains('active') ? 'pengumuman' : 'keuangan';
+        
+        // Determine background type
+        let bgType = 'gradient';
+        if (document.getElementById('btnBgSolid').classList.contains('active')) {
+          bgType = 'solid';
+        } else if (document.getElementById('btnBgGradient').classList.contains('active')) {
+          bgType = 'gradient';
+        } else if (document.getElementById('btnBgImage').classList.contains('active')) {
+          bgType = 'image';
+        }
+        
+        const newSettings = {
+          nama_masjid: document.getElementById('inputNamaMasjid').value || 'Masjid Al-Ikhlas',
+          logo_masjid: document.getElementById('inputLogoMasjid').value || '🕌',
+          alamat_masjid: document.getElementById('inputAlamatMasjid').value || 'Jl. Contoh No. 123',
+          waktu_imsak: document.getElementById('inputImsak').value || '04:30',
+          waktu_subuh: document.getElementById('inputSubuh').value || '04:40',
+          waktu_syuruq: document.getElementById('inputSyuruq').value || '05:55',
+          waktu_dhuha: document.getElementById('inputDhuha').value || '06:15',
+          waktu_dzuhur: document.getElementById('inputDzuhur').value || '12:05',
+          waktu_ashar: document.getElementById('inputAshar').value || '15:15',
+          waktu_maghrib: document.getElementById('inputMaghrib').value || '18:00',
+          waktu_isya: document.getElementById('inputIsya').value || '19:10',
+          panel_mode: panelMode,
+          saldo_kas: document.getElementById('inputSaldoKas').value || 'Rp 0',
+          pemasukan_bulan_ini: document.getElementById('inputPemasukan').value || 'Rp 0',
+          pengeluaran_bulan_ini: document.getElementById('inputPengeluaran').value || 'Rp 0',
+          donors: tempDonors,
+          pengumuman_isi: document.getElementById('inputPengumumanIsi').value || 'Belum ada pengumuman.',
+          running_text: document.getElementById('inputRunningText').value || 'Selamat datang',
+          show_imsak: !document.getElementById('hideImsak').checked,
+          show_subuh: true,
+          show_syuruq: !document.getElementById('hideSyuruq').checked,
+          show_dhuha: !document.getElementById('hideDhuha').checked,
+          show_dzuhur: true,
+          show_ashar: true,
+          show_maghrib: true,
+          show_isya: true,
+          use_manual_date: document.getElementById('useManualDate').checked,
+          manual_date: document.getElementById('inputManualDate').value || '',
+          background_type: bgType,
+          background_color: document.getElementById('inputBgColor').value || '#1a4d2e',
+          background_gradient_1: document.getElementById('inputGradient1').value || '#1a4d2e',
+          background_gradient_2: document.getElementById('inputGradient2').value || '#2d5f3f',
+          background_gradient_3: document.getElementById('inputGradient3').value || '#1a4d2e',
+          background_gradient_direction: document.getElementById('inputGradientDirection').value || '135deg',
+          show_border: document.getElementById('checkShowBorder').checked,
+          border_intensity: parseInt(document.getElementById('rangeBorderIntensity').value),
+          use_excel_schedule: document.getElementById('checkUseExcel').checked,
+          prayer_schedule: tempSchedule
+        };
+        
+        // Get slide settings
+        for (let i = 1; i <= 5; i++) {
+          const slideType = slideTypes[i];
+          let slideContent = '';
+          
+          if (slideType === 'url') {
+            slideContent = document.getElementById(`inputSlide${i}Url`).value || '';
+          } else if (slideType === 'upload') {
+            const fileInput = document.getElementById(`fileSlide${i}`);
+            if (fileInput && fileInput.files && fileInput.files[0]) {
+              slideContent = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = (e) => reject(new Error('Gagal membaca file'));
+                reader.readAsDataURL(fileInput.files[0]);
+              });
+            } else {
+              // Keep existing content if no new file uploaded
+              slideContent = (currentSettings && currentSettings[`slide_${i}_content`]) ? currentSettings[`slide_${i}_content`] : '';
+            }
+          }
+          
+          newSettings[`slide_${i}_type`] = slideType;
+          newSettings[`slide_${i}_content`] = slideContent;
+        }
+        
+        // Get background image if type is image
+        if (bgType === 'image') {
+          const backgroundFile = document.getElementById('fileBackground');
+          if (backgroundFile && backgroundFile.files && backgroundFile.files[0]) {
+            newSettings.background_image = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = (e) => resolve(e.target.result);
+              reader.onerror = (e) => reject(new Error('Gagal membaca file background'));
+              reader.readAsDataURL(backgroundFile.files[0]);
+            });
+          } else {
+            // Keep existing background if no new file uploaded
+            newSettings.background_image = (currentSettings && currentSettings.background_image) ? currentSettings.background_image : '';
+          }
+        } else {
+          newSettings.background_image = '';
+        }
+        
+        // Get Adzan settings
+        const adzanType = document.getElementById('btnAdzanUrl').classList.contains('active') ? 'url' : 'upload';
+        newSettings.adzan_type = adzanType;
+        
+        if (adzanType === 'url') {
+          newSettings.adzan_content = document.getElementById('inputAdzanUrl').value || '';
+        } else {
+          const adzanFile = document.getElementById('fileAdzan');
+          if (adzanFile && adzanFile.files && adzanFile.files[0]) {
+            newSettings.adzan_content = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = (e) => resolve(e.target.result);
+              reader.onerror = (e) => reject(new Error('Gagal membaca file adzan'));
+              reader.readAsDataURL(adzanFile.files[0]);
+            });
+          } else {
+             // Keep existing content
+             newSettings.adzan_content = (currentSettings && currentSettings.adzan_content) ? currentSettings.adzan_content : '';
+          }
+        }
+        
+        // Get Beep settings
+        const beepFile = document.getElementById('fileBeep');
+        if (beepFile && beepFile.files && beepFile.files[0]) {
+          newSettings.beep_content = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = (e) => reject(new Error('Gagal membaca file beep'));
+            reader.readAsDataURL(beepFile.files[0]);
+          });
+        } else {
+           // Keep existing content
+           newSettings.beep_content = (currentSettings && currentSettings.beep_content) ? currentSettings.beep_content : '';
+        }
+        
+        // Save to localStorage
+        localStorage.setItem('masjidSettings', JSON.stringify(newSettings));
+        currentSettings = newSettings;
+        updateDisplay();
+        
+        saveBtn.disabled = false;
+        saveBtn.textContent = '✅ Tersimpan!';
+        
+        setTimeout(() => {
+          saveBtn.textContent = '💾 Simpan Pengaturan';
+          closeSettings();
+        }, 1500);
+        
+      } catch (error) {
+        console.error("Save failed:", error);
+        saveBtn.disabled = false;
+        
+        let errorMsg = '❌ Gagal!';
+        if (error.name === 'QuotaExceededError' || error.message.includes('quota')) {
+          errorMsg = '❌ Penyimpanan Penuh! File MP3 terlalu besar.';
+          alert("Penyimpanan browser penuh. Harap gunakan file MP3 yang lebih kecil (di bawah 2MB) atau hapus file lain.");
+        } else {
+          alert("Gagal menyimpan: " + error.message);
+        }
+        
+        saveBtn.textContent = errorMsg;
+        
+        setTimeout(() => {
+          saveBtn.textContent = '💾 Simpan Pengaturan';
+        }, 3000);
+      }
+    }
+    
+      // Show audio policy warning if needed
+      document.body.addEventListener('click', function() {
+        if (window.audioContext && window.audioContext.state === 'suspended') {
+          window.audioContext.resume();
+        }
+      }, { once: true });
+    
+    // Initialize on page load
+    window.onload = function() {
+      // Show audio overlay immediately
+      showAudioOverlay();
+      
+      loadSettings();
+      
+      // Start intervals
+      updateClock();
+      updateCountdown();
+      setInterval(updateClock, 1000);
+      setInterval(updateDates, 60000);
+      setInterval(updateCountdown, 1000);
+      setInterval(rotateAyat, 15000);
+      
+      // Start media animation
+      animateMediaSlides();
+      
+      // Set ayat pertama
+      document.getElementById('ayatArab').textContent = ayatCollection[0].arab;
+      document.getElementById('ayatTerjemahan').textContent = ayatCollection[0].terjemahan;
+    };
+
+    function showAudioOverlay() {
+      // Always create a new overlay to be sure
+      const existing = document.getElementById('audioInteractionOverlay');
+      if (existing) existing.remove();
+      
+      const overlay = document.createElement('div');
+      overlay.id = 'audioInteractionOverlay';
+      // Use max z-index
+      overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2147483647; display: flex; justify-content: center; align-items: center; flex-direction: column; cursor: pointer; backdrop-filter: blur(10px);';
+      overlay.innerHTML = `
+        <div style="font-size: 5em;">🔊</div>
+        <div style="color: white; font-size: 2em; margin-top: 20px; font-weight: bold; text-align: center; font-family: system-ui, -apple-system, sans-serif;">Klik Layar untuk Mengaktifkan Suara</div>
+        <div style="color: #f4c430; font-size: 1.2em; margin-top: 10px; text-align: center; font-family: system-ui, -apple-system, sans-serif;">Diperlukan agar Adzan & Beep dapat berbunyi otomatis</div>
+      `;
+      overlay.onclick = function() {
+        this.remove();
+        // Try to play silent audio to unlock autoplay
+        const silentAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA");
+        silentAudio.play().catch(e => console.log("Audio unlock failed", e));
+        
+        if (window.audioContext && window.audioContext.state === 'suspended') {
+          window.audioContext.resume();
+        }
+      };
+      document.body.appendChild(overlay);
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b502263343aea82',t:'MTc2NjkxNTIyNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
